@@ -2,7 +2,7 @@ services:
   api:
     image: edemziddah/api-rust
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_MAXAGE: ${JWT_MAXAGE}
 
