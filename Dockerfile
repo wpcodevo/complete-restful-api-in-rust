@@ -6,6 +6,7 @@ WORKDIR /complete-restful-api-in-rust
 
 # Install OpenSSL and pkg-config
 RUN apt-get update && apt-get install -y libssl-dev pkg-config
+ENV OPENSSL_DIR=/usr/local/musl
 
 # Stage 2: Dependency Caching
 FROM chef AS planner
