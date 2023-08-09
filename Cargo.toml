@@ -25,4 +25,5 @@ sqlx = { version = "0.7.1", features = [
 ] }
 uuid = { version = "1.4.1", features = ["serde", "v4"] }
 validator = { version = "0.16.1", features = ["derive"] }
-openssl = "*"
+openssl = "0.10.56"
+openssl-probe = "0.1.5"

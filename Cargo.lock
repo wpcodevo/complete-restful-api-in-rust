@@ -612,6 +612,7 @@ dependencies = [
  "env_logger",
  "jsonwebtoken",
  "openssl",
+ "openssl-probe",
  "serde",
  "serde_json",
  "sqlx",
