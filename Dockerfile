@@ -12,11 +12,12 @@ RUN cargo chef prepare --recipe-path recipe.json
 # Stage 3: Build Application and SQLx Migrations
 FROM chef AS builder
 COPY --from=planner /complete-restful-api-in-rust/recipe.json recipe.json
+
+RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
+
 COPY . .
-RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json \
-    && cargo install sqlx-cli --no-default-features --features native-tls,postgres \
-    && sqlx migrate run \
-    && cargo build --release --target x86_64-unknown-linux-musl
+
+RUN cargo build --release --target x86_64-unknown-linux-musl
 
 # Stage 4: Create Minimal Image
 FROM scratch
