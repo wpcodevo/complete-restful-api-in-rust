@@ -611,6 +611,7 @@ dependencies = [
  "dotenv",
  "env_logger",
  "jsonwebtoken",
+ "openssl",
  "serde",
  "serde_json",
  "sqlx",

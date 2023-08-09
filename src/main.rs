@@ -1,3 +1,4 @@
+extern crate openssl;
 mod config;
 mod db;
 mod dtos;
