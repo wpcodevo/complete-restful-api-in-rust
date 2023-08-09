@@ -1,37 +1,25 @@
-# Stage 1: Build the Rust Application
-FROM rust:1.71 as builder
+# Stage 1: Dependency Preparation
+FROM messense/rust-musl-cross:x86_64-musl as chef
+ENV SQLX_OFFLINE=true
+RUN cargo install cargo-chef
+WORKDIR /complete-restful-api-in-rust
 
-# Set the working directory
-WORKDIR /app
+# Stage 2: Dependency Caching
+FROM chef AS planner
+COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
 
-# Copy only the dependency manifests and lock file
-COPY Cargo.toml Cargo.lock ./
+# Stage 3: Build Application and SQLx Migrations
+FROM chef AS builder
+COPY --from=planner /complete-restful-api-in-rust/recipe.json recipe.json
+COPY . .
+RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json \
+    && cargo install sqlx-cli --no-default-features --features native-tls,postgres \
+    && sqlx migrate run \
+    && cargo build --release --target x86_64-unknown-linux-musl
 
-# Build the dependencies
-RUN cargo build --release
-
-# Copy the source code
-COPY src ./src
-
-# Build the application
-RUN cargo build --release
-
-# Stage 2: Create the Final Image
-FROM debian:buster-slim
-
-# Install system dependencies (if needed)
-RUN apt-get update && \
-    apt-get install -y libssl-dev
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the binary from the builder stage
-COPY --from=builder /app/target/release/complete-restful-api-in-rust .
-
-
-# Expose the port the application will run on
+# Stage 4: Create Minimal Image
+FROM scratch
+COPY --from=builder /complete-restful-api-in-rust/target/x86_64-unknown-linux-musl/release/complete-restful-api-in-rust /complete-restful-api-in-rust
 EXPOSE 8000
-
-# Command to run the application
-CMD ["./complete-restful-api-in-rust"]
+ENTRYPOINT ["/complete-restful-api-in-rust"]
