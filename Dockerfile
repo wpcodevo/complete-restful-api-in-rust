@@ -4,6 +4,9 @@ ENV SQLX_OFFLINE=true
 RUN cargo install cargo-chef
 WORKDIR /complete-restful-api-in-rust
 
+# Install OpenSSL and pkg-config
+RUN apk update && apk add --no-cache openssl-dev pkgconf
+
 # Stage 2: Dependency Caching
 FROM chef AS planner
 COPY . .
