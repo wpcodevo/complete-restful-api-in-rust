@@ -1,18 +1,23 @@
+# Stage 1: Build the Rust Application
 FROM ekidd/rust-musl-builder:stable as builder
 
 RUN USER=root cargo new --bin complete-restful-api-in-rust
 WORKDIR /complete-restful-api-in-rust
+
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
+
+# Pre-build to cache dependencies
 RUN cargo build --release
 RUN rm src/*.rs
 
 ADD . ./
 
+# Build the application
 RUN rm ./target/x86_64-unknown-linux-musl/release/deps/complete-restful-api-in-rust*
 RUN cargo build --release
 
-
+# Stage 2: Create the Minimal Production Image
 FROM alpine:latest
 
 ARG APP=/usr/src/app
