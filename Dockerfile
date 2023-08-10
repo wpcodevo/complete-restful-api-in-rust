@@ -3,13 +3,13 @@ FROM rust:1.71 as builder
 RUN USER=root cargo new --bin complete-restful-api-in-rust
 WORKDIR /complete-restful-api-in-rust
 COPY Cargo.toml Cargo.lock ./
-RUN cargo build --release --lock
+RUN cargo build --release --locked
 RUN rm src/*.rs
 
 COPY . .
 
 RUN rm ./target/release/deps/complete-restful-api-in-rust*
-RUN cargo build --release
+RUN cargo build --release --locked
 
 
 FROM debian:buster-slim
