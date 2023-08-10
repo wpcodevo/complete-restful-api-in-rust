@@ -1,6 +1,7 @@
 services:
   api-rust:
     image: edemziddah/api-rust
+    container_name: api-rust
     environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
@@ -13,6 +14,7 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+    command: ["./wait-for-db.sh", "api-start"]
   postgres:
     image: postgres:15.3-alpine
     container_name: postgres
@@ -26,6 +28,11 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT}
     volumes:
       - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "localhost", "-U", "${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
