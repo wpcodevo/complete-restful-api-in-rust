@@ -1,5 +1,5 @@
 # Use the Rust musl-builder image for building
-FROM ekidd/rust-musl-builder:stable as builder
+FROM ekidd/rust-musl-builder:latest as builder
 
 WORKDIR /usr/src/app
 

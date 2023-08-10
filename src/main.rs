@@ -9,7 +9,9 @@ mod success;
 mod utils;
 
 use actix_cors::Cors;
-use actix_web::{get, http::header, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{
+    get, http::header, middleware::Logger, web, App, HttpResponse, HttpServer, Responder,
+};
 use colored::Colorize as _Colorize;
 use config::Config;
 use db::DBClient;
@@ -30,7 +32,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     dotenv().ok();
-    // env_logger::init();
+    env_logger::init();
 
     let config = Config::init();
 
@@ -66,7 +68,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .service(scopes::auth::auth_scope())
             .service(scopes::users::users_scope())
             .wrap(cors)
-            // .wrap(Logger::default())
+            .wrap(Logger::default())
             .service(health_checker_handler)
     })
     .bind(("0.0.0.0", config.port))?
