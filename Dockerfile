@@ -1,17 +1,17 @@
-# Builder Stage
 FROM rust:1.71 as builder
 
+RUN USER=root cargo new --bin complete-restful-api-in-rust
 WORKDIR /complete-restful-api-in-rust
-
-# Copy and build dependencies
 COPY Cargo.toml Cargo.lock ./
-RUN cargo build --release --locked
+RUN cargo build --release --lock
+RUN rm src/*.rs
 
-# Copy the source code and build the application
 COPY . .
-RUN cargo build --release --locked
 
-# Production Stage
+RUN rm ./target/release/deps/complete-restful-api-in-rust*
+RUN cargo build --release
+
+
 FROM debian:buster-slim
 ARG APP=/usr/src/app
 
@@ -33,7 +33,6 @@ COPY --from=builder /complete-restful-api-in-rust/target/release/complete-restfu
 RUN chown -R $APP_USER:$APP_USER ${APP}
 
 USER $APP_USER
-
 WORKDIR ${APP}
 
 CMD ["./complete-restful-api-in-rust"]
