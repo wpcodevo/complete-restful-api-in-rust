@@ -30,4 +30,4 @@ validator = { version = "0.16.1", features = ["derive"] }
 
 [[bin]]
 name = "complete-restful-api-in-rust"
-path = "src/main.rs"
+path = "complete-restful-api-in-rust/src/main.rs"
