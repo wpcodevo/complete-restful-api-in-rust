@@ -8,7 +8,6 @@ RUN rm src/*.rs
 
 COPY . .
 
-RUN rm ./target/release/deps/complete-restful-api-in-rust*
 RUN cargo build --release --locked
 
 
