@@ -5,11 +5,11 @@ WORKDIR /usr/src/app
 
 # Copy and build dependencies
 COPY Cargo.toml Cargo.lock ./
-RUN cargo build --release --locked
+RUN cargo build --release
 
 # Copy the source code and build the application
 COPY . .
-RUN cargo build --release --locked
+RUN cargo build --release
 
 # Stage 2: Create the Minimal Production Image
 FROM alpine:latest

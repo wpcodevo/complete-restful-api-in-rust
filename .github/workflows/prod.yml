@@ -80,7 +80,6 @@ jobs:
       - name: Build and push Docker images
         uses: docker/bake-action@v2.3.0
         with:
-          build-args: RUST_VERSION=1.71.1
           push: true
           set: |
             *.cache-from=type=gha
