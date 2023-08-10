@@ -1,5 +1,5 @@
 services:
-  api:
+  api-rust:
     image: edemziddah/api-rust
     environment:
       DATABASE_URL: ${DATABASE_URL}
