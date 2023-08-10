@@ -20,6 +20,11 @@ install_and_apply_migrations() {
     echo "Migrations applied!"
 }
 
+# Print the environment variables
+echo "POSTGRES_HOST: $POSTGRES_HOST"
+echo "POSTGRES_PORT: $POSTGRES_PORT"
+# Add other environment variables as needed
+
 # Determine the action based on the argument passed to the script
 if [ "$1" = "api-start" ]; then
     wait_for_db

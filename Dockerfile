@@ -14,6 +14,9 @@ RUN rm src/*.rs
 COPY . .
 RUN cargo build --release --locked
 
+# Make the wait-for-db.sh script executable
+RUN chmod +x /complete-restful-api-in-rust/wait-for-db.sh
+
 # Production Stage
 FROM debian:buster-slim
 ARG APP=/usr/src/app
