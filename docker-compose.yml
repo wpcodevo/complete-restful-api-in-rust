@@ -1,6 +1,7 @@
 services:
   api-rust:
     image: edemziddah/api-rust
+    container_name: api-rust
     environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
