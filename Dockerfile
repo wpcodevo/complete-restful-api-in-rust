@@ -1,4 +1,5 @@
 FROM rust:1.71 as builder
+ENV SQLX_OFFLINE=true
 
 # Create a new Rust project
 RUN USER=root cargo new --bin complete-restful-api-in-rust
@@ -21,8 +22,6 @@ RUN apt-get update \
     && apt-get install -y ca-certificates tzdata \
     && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 8000
-
 ENV TZ=Etc/UTC \
     APP_USER=appuser
 
@@ -37,4 +36,5 @@ RUN chown -R $APP_USER:$APP_USER ${APP}
 USER $APP_USER
 WORKDIR ${APP}
 
-CMD ["./complete-restful-api-in-rust"]
+ENTRYPOINT ["./complete-restful-api-in-rust"]
+EXPOSE 8000
