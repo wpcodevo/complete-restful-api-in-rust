@@ -1,5 +1,4 @@
 extern crate openssl;
-extern crate openssl_probe;
 mod config;
 mod db;
 mod dtos;
@@ -28,7 +27,6 @@ pub struct AppState {
 
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    openssl_probe::init_ssl_cert_env_vars();
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var("RUST_LOG", "actix_web=info");
     }
