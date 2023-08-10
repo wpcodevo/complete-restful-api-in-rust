@@ -1,24 +1,39 @@
-# Stage 1: Dependency Preparation
-FROM messense/rust-musl-cross:x86_64-musl as chef
-ENV SQLX_OFFLINE=true
-RUN cargo install cargo-chef
+FROM ekidd/rust-musl-builder:stable as builder
+
+RUN USER=root cargo new --bin complete-restful-api-in-rust
 WORKDIR /complete-restful-api-in-rust
+COPY ./Cargo.lock ./Cargo.lock
+COPY ./Cargo.toml ./Cargo.toml
+RUN cargo build --release
+RUN rm src/*.rs
 
-# Stage 2: Dependency Caching
-FROM chef AS planner
-COPY . .
-RUN cargo chef prepare --recipe-path recipe.json
+ADD . ./
 
-# Stage 3: Build Application and SQLx Migrations
-FROM chef AS builder
-COPY --from=planner /complete-restful-api-in-rust/recipe.json recipe.json
+RUN rm ./target/x86_64-unknown-linux-musl/release/deps/rust_docker_web*
+RUN cargo build --release
 
-RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
-COPY . .
-RUN cargo build --release --target x86_64-unknown-linux-musl
 
-# Stage 4: Create Minimal Image
-FROM scratch
-COPY --from=builder /complete-restful-api-in-rust/target/x86_64-unknown-linux-musl/release/complete-restful-api-in-rust /complete-restful-api-in-rust
+FROM alpine:latest
+
+ARG APP=/usr/src/app
+
 EXPOSE 8000
-ENTRYPOINT ["/complete-restful-api-in-rust"]
+
+ENV TZ=Etc/UTC \
+    APP_USER=appuser
+
+RUN addgroup -S $APP_USER \
+    && adduser -S -g $APP_USER $APP_USER
+
+RUN apk update \
+    && apk add --no-cache ca-certificates tzdata \
+    && rm -rf /var/cache/apk/*
+
+COPY --from=builder /home/rust/src/complete-restful-api-in-rust/target/x86_64-unknown-linux-musl/release/complete-restful-api-in-rust ${APP}/complete-restful-api-in-rust
+
+RUN chown -R $APP_USER:$APP_USER ${APP}
+
+USER $APP_USER
+WORKDIR ${APP}
+
+CMD ["./complete-restful-api-in-rust"]
