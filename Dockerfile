@@ -1,7 +1,7 @@
 # Builder Stage
 FROM rust:1.71 as builder
 
-WORKDIR /usr/src/app
+WORKDIR /complete-restful-api-in-rust
 
 # Copy and build dependencies
 COPY Cargo.toml Cargo.lock ./
@@ -28,7 +28,7 @@ RUN groupadd $APP_USER \
     && useradd -g $APP_USER $APP_USER \
     && mkdir -p ${APP}
 
-COPY --from=builder /usr/src/app/target/release/complete-restful-api-in-rust ${APP}/complete-restful-api-in-rust
+COPY --from=builder /complete-restful-api-in-rust/target/release/complete-restful-api-in-rust ${APP}/complete-restful-api-in-rust
 
 RUN chown -R $APP_USER:$APP_USER ${APP}
 
