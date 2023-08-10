@@ -9,7 +9,7 @@ RUN rm src/*.rs
 
 ADD . ./
 
-RUN rm ./target/x86_64-unknown-linux-musl/release/deps/rust_docker_web*
+RUN rm ./target/x86_64-unknown-linux-musl/release/deps/complete-restful-api-in-rust*
 RUN cargo build --release
 
 
