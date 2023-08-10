@@ -1,3 +1,4 @@
+# Builder Stage
 FROM rust:1.71 as builder
 ENV SQLX_OFFLINE=true
 
@@ -14,7 +15,8 @@ RUN rm src/*.rs
 COPY . .
 RUN cargo build --release --locked
 
-# Make the wait-for-db.sh script executable
+# Copy wait-for-db.sh
+COPY wait-for-db.sh /complete-restful-api-in-rust/wait-for-db.sh
 RUN chmod +x /complete-restful-api-in-rust/wait-for-db.sh
 
 # Production Stage
@@ -34,6 +36,7 @@ RUN groupadd $APP_USER \
 
 COPY --from=builder /complete-restful-api-in-rust/target/release/complete-restful-api-in-rust ${APP}/complete-restful-api-in-rust
 COPY --from=builder /complete-restful-api-in-rust/wait-for-db.sh ${APP}/wait-for-db.sh
+RUN chmod +x ${APP}/wait-for-db.sh
 
 RUN chown -R $APP_USER:$APP_USER ${APP}
 
