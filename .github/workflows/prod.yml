@@ -29,11 +29,11 @@ jobs:
       postgres:
         image: postgres:15.3-alpine
         ports:
-          - 5432:5432
+          - 6500:5432
         env:
-          POSTGRES_USER: ${{secrets.POSTGRES_USER}}
-          POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
-          POSTGRES_DB: ${{secrets.POSTGRES_DB}}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password123
+          POSTGRES_DB: rust_api_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -63,7 +63,7 @@ jobs:
         run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
 
       - name: Run SQLx Database Migrations
-        run: sqlx database setup
+        run: sqlx database setup --database-url postgresql://postgres:password123@localhost:6500/rust_api_test
 
       - name: Build and test code
         run: |
