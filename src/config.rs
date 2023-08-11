@@ -14,8 +14,10 @@ impl Config {
         let jwt_secret = std::env::var("JWT_SECRET_KEY").expect("JWT_SECRET_KEY must be set");
         let jwt_maxage = std::env::var("JWT_MAXAGE").expect("JWT_MAXAGE must be set");
 
-        let run_migrations = std::env::var("RUN_MIGRATIONS").expect("RUN_MIGRATIONS must be set");
-        let run_migrations = run_migrations.to_lowercase() == "true";
+        let run_migrations = std::env::var("RUN_MIGRATIONS")
+            .unwrap_or_default()
+            .to_lowercase()
+            == "true";
 
         Config {
             database_url,
