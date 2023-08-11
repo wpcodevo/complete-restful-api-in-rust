@@ -7,6 +7,7 @@ on:
 
 env:
   SQLX_OFFLINE: true
+  DATABASE_URL: ${{secrets.DATABASE_TEST_URI}}
 
 jobs:
   build:
@@ -50,7 +51,7 @@ jobs:
         run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
 
       - name: Run SQLx Database Migrations
-        run: sqlx database setup ${{secrets.DATABASE_TEST_URI}}
+        run: sqlx database setup
 
       - name: Build and test code
         run: |
