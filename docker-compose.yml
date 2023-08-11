@@ -14,8 +14,8 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - postgres
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
       
   postgres:
     image: postgres:15.3-alpine
