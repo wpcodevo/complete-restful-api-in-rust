@@ -7,17 +7,6 @@ on:
 
 env:
   SQLX_OFFLINE: true
-  POSTGRES_HOST: ${{secrets.POSTGRES_HOST}}
-  POSTGRES_USER: ${{secrets.POSTGRES_USER}}
-  POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
-  POSTGRES_DB: ${{secrets.POSTGRES_DB}}
-  POSTGRES_PORT: ${{secrets.POSTGRES_PORT}}
-  PGADMIN_DEFAULT_EMAIL: ${{secrets.PGADMIN_DEFAULT_EMAIL}}
-  PGADMIN_DEFAULT_PASSWORD: ${{secrets.PGADMIN_DEFAULT_PASSWORD}}
-  PGADMIN_LISTEN_PORT: ${{secrets.PGADMIN_LISTEN_PORT}}
-  DATABASE_URL: ${{secrets.DATABASE_URL}}
-  JWT_SECRET_KEY: ${{secrets.JWT_SECRET_KEY}}
-  JWT_MAXAGE: ${{secrets.JWT_MAXAGE}}
 
 jobs:
   build:
@@ -84,3 +73,37 @@ jobs:
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+
+      - name: Copy docker-compose.yml to vps_server
+        run: sshpass -v -p ${{ secrets.VPS_PASSWORD }} scp -o StrictHostKeyChecking=no docker-compose.yml root@${{ vars.VPS_IP }}:~
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: root
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd ~
+            export DATABASE_URL=${{ secrets.DATABASE_URL }}
+            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            export JWT_MAXAGE=${{ secrets.JWT_MAXAGE }}
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
