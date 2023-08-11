@@ -20,11 +20,9 @@ services:
     ports:
       - 6500:5432
     environment:
-      POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_PORT: ${POSTGRES_PORT}
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:

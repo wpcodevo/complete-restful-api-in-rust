@@ -7,19 +7,6 @@ on:
 
 env:
   SQLX_OFFLINE: true
-  POSTGRES_HOST: ${{secrets.POSTGRES_HOST}}
-  POSTGRES_USER: ${{secrets.POSTGRES_USER}}
-  POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
-  POSTGRES_DB: ${{secrets.POSTGRES_DB}}
-  POSTGRES_PORT: ${{secrets.POSTGRES_PORT}}
-  PGADMIN_DEFAULT_EMAIL: ${{secrets.PGADMIN_DEFAULT_EMAIL}}
-  PGADMIN_DEFAULT_PASSWORD: ${{secrets.PGADMIN_DEFAULT_PASSWORD}}
-  PGADMIN_LISTEN_PORT: ${{secrets.PGADMIN_LISTEN_PORT}}
-  DATABASE_URL: ${{secrets.DATABASE_URL}}
-  JWT_SECRET_KEY: ${{secrets.JWT_SECRET_KEY}}
-  JWT_MAXAGE: ${{secrets.JWT_MAXAGE}}
-  VPS_PASSWORD: ${{secrets.VPS_PASSWORD}}
-  VPS_IP: ${{secrets.VPS_IP}}
 
 jobs:
   build:
@@ -29,11 +16,11 @@ jobs:
       postgres:
         image: postgres:15.3-alpine
         ports:
-          - 6500:5432
+          - 5432:5432
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password123
-          POSTGRES_DB: rust_api_test
+          POSTGRES_USER: ${{secrets.POSTGRES_USER}}
+          POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
+          POSTGRES_DB: ${{secrets.POSTGRES_DB}}
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -63,7 +50,7 @@ jobs:
         run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
 
       - name: Run SQLx Database Migrations
-        run: sqlx database setup --database-url postgresql://postgres:password123@localhost:6500/rust_api_test
+        run: sqlx database setup
 
       - name: Build and test code
         run: |
