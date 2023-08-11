@@ -1,17 +1,13 @@
 rust-api.codevoweb.com {
-    route /db* {
-        reverse_proxy postgres:5432 {
-            header_down Strict-Transport-Security max-age=31536000;
-        }
-    }
+    reverse_proxy /api* api-rust:8000
+    reverse_proxy /db* postgres:6500
+    reverse_proxy /pgadmin* pgadmin:80
 
-    route /pgadmin* {
-        reverse_proxy pgadmin:80 {
-            header_down Strict-Transport-Security max-age=31536000;
-        }
-    }
-
-    reverse_proxy api-rust:8000 {
-        header_down Strict-Transport-Security max-age=31536000;
+    header {
+        Strict-Transport-Security max-age=31536000;
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        X-XSS-Protection "1; mode=block"
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
     }
 }
