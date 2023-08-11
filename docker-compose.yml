@@ -13,7 +13,7 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
-    command: ["/wait-for-db.sh", "api-start"]
+    # command: ["/wait-for-db.sh", "api-start"]
 
   postgres:
     image: postgres:15.3-alpine
@@ -29,10 +29,11 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-h", "localhost", "-U", "${POSTGRES_USER}"]
+      test: ["CMD", "pg_isready", "-h", "postgres", "-U", "${POSTGRES_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
+
 
   pgadmin:
     image: dpage/pgadmin4
