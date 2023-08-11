@@ -105,12 +105,12 @@ jobs:
             export DATABASE_URL=${{ secrets.DATABASE_URL }}
             export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             export JWT_MAXAGE=${{ secrets.JWT_MAXAGE }}
-            export POSTGRES_USER: ${{secrets.POSTGRES_USER}}
-            export POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
-            export POSTGRES_DB: ${{secrets.POSTGRES_DB}}
-            export PGADMIN_DEFAULT_EMAIL: ${{secrets.PGADMIN_DEFAULT_EMAIL}}
-            export PGADMIN_DEFAULT_PASSWORD: ${{secrets.PGADMIN_DEFAULT_PASSWORD}}
-            export PGADMIN_LISTEN_PORT: ${{secrets.PGADMIN_LISTEN_PORT}}
+            export POSTGRES_USER=${{secrets.POSTGRES_USER}}
+            export POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}
+            export POSTGRES_DB=${{secrets.POSTGRES_DB}}
+            export PGADMIN_DEFAULT_EMAIL=${{secrets.PGADMIN_DEFAULT_EMAIL}}
+            export PGADMIN_DEFAULT_PASSWORD=${{secrets.PGADMIN_DEFAULT_PASSWORD}}
+            export PGADMIN_LISTEN_PORT=${{secrets.PGADMIN_LISTEN_PORT}}
             docker-compose down
             docker-compose pull
             docker-compose up -d
