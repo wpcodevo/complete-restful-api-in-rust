@@ -14,8 +14,6 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - postgres
-    # ports:
-    #   - "8000:8000"
       
   postgres:
     image: postgres:15.3-alpine
@@ -31,8 +29,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    links:
-      - "pgadmin"
 
   pgadmin:
     image: dpage/pgadmin4
