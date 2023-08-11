@@ -1,11 +1,18 @@
 rust.codevoweb.com {
-    rewrite /api* {uri}
-    rewrite /db* {uri}
-    rewrite /pgadmin* {uri}
-    
+    rewrite /api* {uri}    
     reverse_proxy /api* api-rust:8000
-    reverse_proxy /db* postgres:5432
-    reverse_proxy /pgadmin* pgadmin:80
+
+    header {
+        Strict-Transport-Security max-age=31536000;
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        X-XSS-Protection "1; mode=block"
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+    }
+}
+
+pgadmin4.codevoweb.com {
+    reverse_proxy pgadmin:80
 
     header {
         Strict-Transport-Security max-age=31536000;

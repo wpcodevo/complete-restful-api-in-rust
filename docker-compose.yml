@@ -31,10 +31,14 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    links:
+      - "pgadmin"
 
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
+    ports:
+      - 5050:80
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
