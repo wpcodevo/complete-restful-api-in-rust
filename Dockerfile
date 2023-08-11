@@ -16,8 +16,8 @@ COPY . .
 RUN cargo build --release --locked
 
 # Copy wait-for-db.sh
-# COPY wait-for-db.sh /complete-restful-api-in-rust/wait-for-db.sh
-# RUN chmod +x /complete-restful-api-in-rust/wait-for-db.sh
+COPY wait-for-db.sh /complete-restful-api-in-rust/wait-for-db.sh
+RUN chmod +x /complete-restful-api-in-rust/wait-for-db.sh
 
 # Production Stage
 FROM debian:buster-slim
@@ -35,8 +35,8 @@ RUN groupadd $APP_USER \
     && mkdir -p ${APP}
 
 COPY --from=builder /complete-restful-api-in-rust/target/release/complete-restful-api-in-rust ${APP}/complete-restful-api-in-rust
-# COPY --from=builder /complete-restful-api-in-rust/wait-for-db.sh ${APP}/wait-for-db.sh
-# RUN chmod +x ${APP}/wait-for-db.sh
+COPY --from=builder /complete-restful-api-in-rust/wait-for-db.sh ${APP}/wait-for-db.sh
+RUN chmod +x ${APP}/wait-for-db.sh
 
 RUN chown -R $APP_USER:$APP_USER ${APP}
 
