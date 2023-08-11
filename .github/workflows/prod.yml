@@ -91,6 +91,9 @@ jobs:
       - name: Install sshpass
         run: sudo apt-get install sshpass
 
+      - name: Copy Caddyfile to vps_server
+        run: sshpass -v -p ${{ secrets.VPS_PASSWORD }} scp -o StrictHostKeyChecking=no Caddyfile root@${{ secrets.VPS_IP }}:~/Caddyfile
+
       - name: Copy docker-compose.yml to vps_server
         run: sshpass -v -p ${{ secrets.VPS_PASSWORD }} scp -o StrictHostKeyChecking=no docker-compose.yml root@${{ secrets.VPS_IP }}:~
 
