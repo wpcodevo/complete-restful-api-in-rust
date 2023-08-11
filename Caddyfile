@@ -1,12 +1,11 @@
 rust.codevoweb.com {
-    @api path /api*
-    reverse_proxy @api api-rust:8000
-
-    @db path /db*
-    reverse_proxy @db postgres:5432
-
-    @pgadmin path /pgadmin*
-    reverse_proxy @pgadmin pgadmin:80
+    rewrite /api* /api{uri}
+    rewrite /db* /db{uri}
+    rewrite /pgadmin* /pgadmin{uri}
+    
+    reverse_proxy /api* api-rust:8000
+    reverse_proxy /db* postgres:6500
+    reverse_proxy /pgadmin* pgadmin:80
 
     header {
         Strict-Transport-Security max-age=31536000;
