@@ -1,7 +1,7 @@
 rust.codevoweb.com {
-    rewrite /api* /api{uri}
-    rewrite /db* /db{uri}
-    rewrite /pgadmin* /pgadmin{uri}
+    rewrite /api* /{uri}
+    rewrite /db* /{uri}
+    rewrite /pgadmin* /{uri}
     
     reverse_proxy /api* api-rust:8000
     reverse_proxy /db* postgres:6500
