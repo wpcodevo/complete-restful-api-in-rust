@@ -43,5 +43,6 @@ RUN chown -R $APP_USER:$APP_USER ${APP}
 USER $APP_USER
 WORKDIR ${APP}
 
+CMD [ "./wait-for-db.sh" ]
 ENTRYPOINT ["./complete-restful-api-in-rust"]
 EXPOSE 8000
