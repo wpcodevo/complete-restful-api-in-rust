@@ -30,3 +30,7 @@ install:
 	cargo install cargo-watch
 	# SQLX-CLI
 	cargo install sqlx-cli --no-default-features --features postgres
+	# Deploy
+	sudo apt-get update
+	sudo apt-get install docker.io
+	sudo apt-get install docker-compose
