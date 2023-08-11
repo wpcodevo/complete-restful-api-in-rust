@@ -41,6 +41,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .connect(&config.database_url)
         .await?;
 
+    if config.run_migrations {
+        sqlx::migrate!("./migrations").run(&pool).await?;
+    }
+
     let db_client = DBClient::new(pool);
     let app_state: AppState = AppState {
         env: config.clone(),
