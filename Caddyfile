@@ -1,4 +1,4 @@
-rust-api.codevoweb.com {
+rust.codevoweb.com {
     reverse_proxy /api* api-rust:8000
     reverse_proxy /db* postgres:6500
     reverse_proxy /pgadmin* pgadmin:80
