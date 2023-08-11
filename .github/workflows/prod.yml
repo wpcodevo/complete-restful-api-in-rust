@@ -50,7 +50,7 @@ jobs:
         run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
 
       - name: Run SQLx Database Migrations
-        run: sqlx database setup
+        run: sqlx database setup ${{secrets.DATABASE_TEST_URI}}
 
       - name: Build and test code
         run: |
