@@ -42,7 +42,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     if config.run_migrations {
-        sqlx::migrate!("./migrations").run(&pool).await?;
+        match sqlx::migrate!("./migrations").run(&pool).await {
+            Ok(_) => println!("Migrations executed successfully."),
+            Err(e) => eprintln!("Error executing migrations: {}", e),
+        };
     }
 
     let db_client = DBClient::new(pool);
