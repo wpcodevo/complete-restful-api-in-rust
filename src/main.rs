@@ -12,7 +12,6 @@ use actix_cors::Cors;
 use actix_web::{
     get, http::header, middleware::Logger, web, App, HttpResponse, HttpServer, Responder,
 };
-use colored::Colorize as _Colorize;
 use config::Config;
 use db::DBClient;
 use dotenv::dotenv;
@@ -54,7 +53,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!(
         "{}",
-        format!("Server is running on http://localhost:{}", config.port).green()
+        format!("Server is running on http://localhost:{}", config.port)
     );
 
     HttpServer::new(move || {

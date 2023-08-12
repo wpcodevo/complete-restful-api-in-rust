@@ -11,7 +11,6 @@ actix-web = "4.3.1"
 argon2 = "0.5.1"
 async-trait = "0.1.72"
 chrono = { version = "0.4.26", features = ["serde"] }
-colored = "2.0.4"
 dotenv = "0.15.0"
 env_logger = "0.10.0"
 jsonwebtoken = "8.3.0"
