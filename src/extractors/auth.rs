@@ -2,26 +2,12 @@ use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::error::{ErrorForbidden, ErrorInternalServerError, ErrorUnauthorized};
 use actix_web::{http, web, HttpMessage};
 use futures_util::future::{ready, LocalBoxFuture, Ready};
-use serde::Serialize;
-use std::fmt;
 use std::task::{Context, Poll};
 
 use crate::db::UserExt;
-use crate::error::{ErrorMessage, HttpError};
+use crate::error::{ErrorMessage, ErrorResponse, HttpError};
 use crate::models::UserRole;
 use crate::{utils, AppState};
-
-#[derive(Debug, Serialize)]
-struct ErrorResponse {
-    status: String,
-    message: String,
-}
-
-impl fmt::Display for ErrorResponse {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", serde_json::to_string(&self).unwrap())
-    }
-}
 
 pub struct RequireAuth;
 

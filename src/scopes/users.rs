@@ -5,7 +5,7 @@ use crate::{
     dtos::{FilterUserDto, UserData, UserResponseDto, RequestQueryDto, UserListResponseDto},
     error::HttpError,
     extractors::auth::{RequireAuth, RequireOnlyAdmin},
-    AppState, models::User, db::UserExt,
+    AppState, db::UserExt,
 };
 
 pub fn users_scope() -> Scope {
@@ -29,22 +29,17 @@ pub fn users_scope() -> Scope {
 )]
 async fn get_me(
     req: HttpRequest,
+    app_state: web::Data<AppState>,
 ) -> Result<HttpResponse, HttpError> {
     let ext = req.extensions();
-    let user = ext.get::<User>();
     let user_id = ext.get::<uuid::Uuid>();
 
-    println!("user {:?}", user);
-    println!("user_id: {:?}", user_id);
-
-    if user.is_none() {
-        return Err(HttpError::unauthorized("User not found ✅✅✅"))
-    }
+   let user = app_state.db_client.get_user(Some(*user_id.unwrap()), None, None).await.map_err(|e| HttpError::server_error(e.to_string()))?;
 
     Ok(HttpResponse::Ok().json(UserResponseDto {
         status: "success".to_string(),
         data: UserData {
-            user: FilterUserDto::filter_user(user.unwrap()),
+            user: FilterUserDto::filter_user(&user.unwrap()),
         },
     }))
 }
@@ -103,7 +98,7 @@ mod tests {
         utils::{
             test_utils::{get_test_config, init_test_users},
             token,
-        },
+        }, error::{ErrorResponse, ErrorMessage},
     };
 
     use super::*;
@@ -123,7 +118,7 @@ mod tests {
                     env: config.clone(),
                     db_client,
                 }))
-                .service(web::scope("/api/users").route("/me", web::get().to(get_me))),
+                .service(web::scope("/api/users").route("/me", web::get().to(get_me).wrap(RequireAuth))),
         )
         .await;
 
@@ -146,7 +141,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn test_get_me_with_ivalid_token(pool: Pool<Postgres>) {
+    async fn test_get_me_with_invalid_token(pool: Pool<Postgres>) {
         let db_client = DBClient::new(pool.clone());
         let config = get_test_config();
 
@@ -156,7 +151,7 @@ mod tests {
                     env: config.clone(),
                     db_client,
                 }))
-                .service(web::scope("/api/users").route("/me", web::get().to(get_me))),
+                .service(web::scope("/api/users").route("/me", web::get().to(get_me).wrap(RequireAuth))),
         )
         .await;
 
@@ -167,18 +162,25 @@ mod tests {
             ))
             .uri("/api/users/me")
             .to_request();
+        
+        let result = test::try_call_service(&app, req).await.err();
 
-        let resp = test::call_service(&app, req).await;
+        match result {
+            Some(err) => {
+                let expected_status = http::StatusCode::UNAUTHORIZED;
+                let actual_status = err.as_response_error().status_code();
 
-        assert_eq!(resp.status(), http::StatusCode::UNAUTHORIZED);
+                assert_eq!(actual_status, expected_status);
 
-        let body = test::read_body(resp).await;
-        let expected_message = "Authentication token is invalid or expired";
-
-        let body_json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        let actual_message = body_json["message"].as_str().unwrap();
-
-        assert_eq!(actual_message, expected_message);
+                let err_response: ErrorResponse = serde_json::from_str(&err.to_string())
+                    .expect("Failed to deserialize JSON string");
+                let expected_message = ErrorMessage::InvalidToken.to_string();
+                assert_eq!(err_response.message, expected_message);
+            }
+            None => {
+                panic!("Service call succeeded, but an error was expected.");
+            }
+        }
     }
 
     #[sqlx::test]
@@ -192,23 +194,31 @@ mod tests {
                     env: config.clone(),
                     db_client,
                 }))
-                .service(web::scope("/api/users").route("/me", web::get().to(get_me))),
+                .service(web::scope("/api/users").route("/me", web::get().to(get_me).wrap(RequireAuth))),
         )
         .await;
 
         let req = test::TestRequest::get().uri("/api/users/me").to_request();
 
-        let resp = test::call_service(&app, req).await;
+       
+        let result = test::try_call_service(&app, req).await.err();
 
-        assert_eq!(resp.status(), http::StatusCode::UNAUTHORIZED);
+        match result {
+            Some(err) => {
+                let expected_status = http::StatusCode::UNAUTHORIZED;
+                let actual_status = err.as_response_error().status_code();
 
-        let body = test::read_body(resp).await;
-        let expected_message = "You are not logged in, please provide token";
+                assert_eq!(actual_status, expected_status);
 
-        let body_json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        let actual_message = body_json["message"].as_str().unwrap();
-
-        assert_eq!(actual_message, expected_message);
+                let err_response: ErrorResponse = serde_json::from_str(&err.to_string())
+                    .expect("Failed to deserialize JSON string");
+                let expected_message = ErrorMessage::TokenNotProvided.to_string();
+                assert_eq!(err_response.message, expected_message);
+            }
+            None => {
+                panic!("Service call succeeded, but an error was expected.");
+            }
+        }
     }
 
     #[sqlx::test]
@@ -226,7 +236,7 @@ mod tests {
                     env: config.clone(),
                     db_client,
                 }))
-                .service(web::scope("/api/users").route("/me", web::get().to(get_me))),
+                .service(web::scope("/api/users").route("/me", web::get().to(get_me).wrap(RequireAuth))),
         )
         .await;
 
@@ -238,16 +248,23 @@ mod tests {
             ))
             .to_request();
 
-        let resp = test::call_service(&app, req).await;
+         let result = test::try_call_service(&app, req).await.err();
 
-        assert_eq!(resp.status(), http::StatusCode::UNAUTHORIZED);
+        match result {
+            Some(err) => {
+                let expected_status = http::StatusCode::UNAUTHORIZED;
+                let actual_status = err.as_response_error().status_code();
 
-        let body = test::read_body(resp).await;
-        let expected_message = "Authentication token is invalid or expired";
+                assert_eq!(actual_status, expected_status);
 
-        let body_json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        let actual_message = body_json["message"].as_str().unwrap();
-
-        assert_eq!(actual_message, expected_message);
+                let err_response: ErrorResponse = serde_json::from_str(&err.to_string())
+                    .expect("Failed to deserialize JSON string");
+                let expected_message = ErrorMessage::InvalidToken.to_string();
+                assert_eq!(err_response.message, expected_message);
+            }
+            None => {
+                panic!("Service call succeeded, but an error was expected.");
+            }
+        }
     }
 }

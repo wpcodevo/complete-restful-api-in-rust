@@ -154,7 +154,7 @@ mod tests {
     use actix_web::{http, test, App};
     use sqlx::{Pool, Postgres};
 
-    use crate::{db::DBClient, utils::test_utils::get_test_config};
+    use crate::{db::DBClient, error::ErrorResponse, utils::test_utils::get_test_config};
 
     use super::*;
 
@@ -472,10 +472,14 @@ mod tests {
     async fn test_logout_with_valid_token(pool: Pool<Postgres>) {
         let db_client = DBClient::new(pool.clone());
         let config = get_test_config();
-        let user_id = uuid::Uuid::new_v4();
+        let hashed_password = password::hash("password123").unwrap();
+        let user = db_client
+            .save_user("John", "john@example.com", &hashed_password)
+            .await
+            .unwrap();
 
         let token =
-            token::create_token(&user_id.to_string(), config.jwt_secret.as_bytes(), 60).unwrap();
+            token::create_token(&user.id.to_string(), config.jwt_secret.as_bytes(), 60).unwrap();
 
         let app = test::init_service(
             App::new()
@@ -483,7 +487,10 @@ mod tests {
                     env: config.clone(),
                     db_client,
                 }))
-                .service(web::scope("/api/auth").route("/logout", web::post().to(logout))),
+                .service(
+                    web::scope("/api/auth")
+                        .route("/logout", web::post().to(logout).wrap(RequireAuth)),
+                ),
         )
         .await;
 
@@ -515,7 +522,10 @@ mod tests {
                     env: config.clone(),
                     db_client,
                 }))
-                .service(web::scope("/api/auth").route("/logout", web::post().to(logout))),
+                .service(
+                    web::scope("/api/auth")
+                        .route("/logout", web::post().to(logout).wrap(RequireAuth)),
+                ),
         )
         .await;
 
@@ -527,17 +537,24 @@ mod tests {
             ))
             .to_request();
 
-        let resp = test::call_service(&app, req).await;
+        let result = test::try_call_service(&app, req).await.err();
 
-        assert_eq!(resp.status(), http::StatusCode::UNAUTHORIZED);
+        match result {
+            Some(err) => {
+                let expected_status = http::StatusCode::UNAUTHORIZED;
+                let actual_status = err.as_response_error().status_code();
 
-        let body = test::read_body(resp).await;
-        let expected_message = "Authentication token is invalid or expired";
+                assert_eq!(actual_status, expected_status);
 
-        let body_json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        let actual_message = body_json["message"].as_str().unwrap();
-
-        assert_eq!(actual_message, expected_message);
+                let err_response: ErrorResponse = serde_json::from_str(&err.to_string())
+                    .expect("Failed to deserialize JSON string");
+                let expected_message = ErrorMessage::InvalidToken.to_string();
+                assert_eq!(err_response.message, expected_message);
+            }
+            None => {
+                panic!("Service call succeeded, but an error was expected.");
+            }
+        }
     }
 
     #[sqlx::test]
@@ -551,7 +568,10 @@ mod tests {
                     env: config.clone(),
                     db_client,
                 }))
-                .service(web::scope("/api/auth").route("/logout", web::post().to(logout))),
+                .service(
+                    web::scope("/api/auth")
+                        .route("/logout", web::post().to(logout).wrap(RequireAuth)),
+                ),
         )
         .await;
 
@@ -559,17 +579,24 @@ mod tests {
             .uri("/api/auth/logout")
             .to_request();
 
-        let resp = test::call_service(&app, req).await;
+        let result = test::try_call_service(&app, req).await.err();
 
-        assert_eq!(resp.status(), http::StatusCode::UNAUTHORIZED);
+        match result {
+            Some(err) => {
+                let expected_status = http::StatusCode::UNAUTHORIZED;
+                let actual_status = err.as_response_error().status_code();
 
-        let body = test::read_body(resp).await;
-        let expected_message = "You are not logged in, please provide token";
+                assert_eq!(actual_status, expected_status);
 
-        let body_json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        let actual_message = body_json["message"].as_str().unwrap();
-
-        assert_eq!(actual_message, expected_message);
+                let err_response: ErrorResponse = serde_json::from_str(&err.to_string())
+                    .expect("Failed to deserialize JSON string");
+                let expected_message = ErrorMessage::TokenNotProvided.to_string();
+                assert_eq!(err_response.message, expected_message);
+            }
+            None => {
+                panic!("Service call succeeded, but an error was expected.");
+            }
+        }
     }
 
     #[sqlx::test]
@@ -587,7 +614,10 @@ mod tests {
                     env: config.clone(),
                     db_client,
                 }))
-                .service(web::scope("/api/auth").route("/logout", web::post().to(logout))),
+                .service(
+                    web::scope("/api/auth")
+                        .route("/logout", web::post().to(logout).wrap(RequireAuth)),
+                ),
         )
         .await;
 
@@ -599,16 +629,23 @@ mod tests {
             ))
             .to_request();
 
-        let resp = test::call_service(&app, req).await;
+        let result = test::try_call_service(&app, req).await.err();
 
-        assert_eq!(resp.status(), http::StatusCode::UNAUTHORIZED);
+        match result {
+            Some(err) => {
+                let expected_status = http::StatusCode::UNAUTHORIZED;
+                let actual_status = err.as_response_error().status_code();
 
-        let body = test::read_body(resp).await;
-        let expected_message = "Authentication token is invalid or expired";
+                assert_eq!(actual_status, expected_status);
 
-        let body_json: serde_json::Value = serde_json::from_slice(&body).unwrap();
-        let actual_message = body_json["message"].as_str().unwrap();
-
-        assert_eq!(actual_message, expected_message);
+                let err_response: ErrorResponse = serde_json::from_str(&err.to_string())
+                    .expect("Failed to deserialize JSON string");
+                let expected_message = ErrorMessage::InvalidToken.to_string();
+                assert_eq!(err_response.message, expected_message);
+            }
+            None => {
+                panic!("Service call succeeded, but an error was expected.");
+            }
+        }
     }
 }
