@@ -17,19 +17,21 @@ install:
 	cargo add actix-web
 	cargo add actix-cors
 	cargo add serde_json
-	cargo add serde --features derive
-	cargo add chrono --features serde
+	cargo add async-trait
+	cargo add serde -F derive
+	cargo add chrono -F serde
 	cargo add env_logger
 	cargo add dotenv
-	cargo add uuid --features "serde v4"
-	cargo add sqlx --features "runtime-async-std-native-tls postgres chrono uuid"
+	cargo add uuid -F "serde v4"
+	cargo add sqlx -F "tls-native-tls runtime-async-std postgres chrono uuid"
 	cargo add jsonwebtoken
 	cargo add argon2
-	cargo add rand_core --features "std"
+	cargo add openssl-probe
+	cargo add validator -F derive
 	# HotReload
 	cargo install cargo-watch
 	# SQLX-CLI
-	cargo install sqlx-cli --no-default-features --features postgres
+	cargo install sqlx-cli --no-defaultF --features postgres
 	# Deploy
 	sudo apt-get update
 	sudo apt-get install docker.io
