@@ -74,6 +74,7 @@ jobs:
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
+          args: --file docker-compose.prod.yml
   deploy:
     needs: build
     runs-on: ubuntu-latest
