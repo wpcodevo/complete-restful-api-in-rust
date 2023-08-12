@@ -5,6 +5,8 @@ services:
     image: edemziddah/api-rust
     container_name: api-rust
     restart: unless-stopped
+    # ports:
+    #   - "8000:8000"
     environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
@@ -18,6 +20,8 @@ services:
   postgres:
     image: postgres:15.3-alpine
     container_name: postgres
+     # ports:
+    #   - 6500:5432
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -33,8 +37,8 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
-    ports:
-      - 5050:80
+    # ports:
+    #   - 5050:80
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
