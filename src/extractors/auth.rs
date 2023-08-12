@@ -8,7 +8,7 @@ use std::task::{Context, Poll};
 
 use crate::db::UserExt;
 use crate::error::{ErrorMessage, HttpError};
-use crate::models::{User, UserRole};
+use crate::models::UserRole;
 use crate::{utils, AppState};
 
 #[derive(Debug, Serialize)]

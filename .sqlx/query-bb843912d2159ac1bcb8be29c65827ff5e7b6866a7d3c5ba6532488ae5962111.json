@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM users WHERE id = $1",
+  "query": "SELECT id,name, email, password, photo,verified,created_at,updated_at,role as \"role: UserRole\" FROM users WHERE name = $1",
   "describe": {
     "columns": [
       {
@@ -20,38 +20,49 @@
       },
       {
         "ordinal": 3,
-        "name": "photo",
-        "type_info": "Varchar"
-      },
-      {
-        "ordinal": 4,
-        "name": "verified",
-        "type_info": "Bool"
-      },
-      {
-        "ordinal": 5,
         "name": "password",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 6,
-        "name": "role",
+        "ordinal": 4,
+        "name": "photo",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 7,
+        "ordinal": 5,
+        "name": "verified",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 6,
         "name": "created_at",
         "type_info": "Timestamptz"
       },
       {
-        "ordinal": 8,
+        "ordinal": 7,
         "name": "updated_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "role: UserRole",
+        "type_info": {
+          "Custom": {
+            "name": "user_role",
+            "kind": {
+              "Enum": [
+                "admin",
+                "moderator",
+                "user"
+              ]
+            }
+          }
+        }
       }
     ],
     "parameters": {
       "Left": [
-        "Uuid"
+        "Text"
       ]
     },
     "nullable": [
@@ -61,10 +72,10 @@
       false,
       false,
       false,
-      false,
       true,
-      true
+      true,
+      false
     ]
   },
-  "hash": "843923b9a0257cf80f1dff554e7dc8fdfc05f489328e8376513124dfb42996e3"
+  "hash": "bb843912d2159ac1bcb8be29c65827ff5e7b6866a7d3c5ba6532488ae5962111"
 }

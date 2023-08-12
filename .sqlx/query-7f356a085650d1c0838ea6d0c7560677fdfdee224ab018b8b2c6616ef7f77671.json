@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT * FROM users WHERE (name LIKE $1) OR (email LIKE $2)\n            LIMIT $3 OFFSET $4",
+  "query": "SELECT id,name, email, password, photo,verified,created_at,updated_at,role as \"role: UserRole\" FROM users WHERE (name LIKE $1) OR (email LIKE $2)\n            LIMIT $3 OFFSET $4",
   "describe": {
     "columns": [
       {
@@ -20,33 +20,44 @@
       },
       {
         "ordinal": 3,
-        "name": "photo",
-        "type_info": "Varchar"
-      },
-      {
-        "ordinal": 4,
-        "name": "verified",
-        "type_info": "Bool"
-      },
-      {
-        "ordinal": 5,
         "name": "password",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 6,
-        "name": "role",
+        "ordinal": 4,
+        "name": "photo",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 7,
+        "ordinal": 5,
+        "name": "verified",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 6,
         "name": "created_at",
         "type_info": "Timestamptz"
       },
       {
-        "ordinal": 8,
+        "ordinal": 7,
         "name": "updated_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "role: UserRole",
+        "type_info": {
+          "Custom": {
+            "name": "user_role",
+            "kind": {
+              "Enum": [
+                "admin",
+                "moderator",
+                "user"
+              ]
+            }
+          }
+        }
       }
     ],
     "parameters": {
@@ -64,10 +75,10 @@
       false,
       false,
       false,
-      false,
       true,
-      true
+      true,
+      false
     ]
   },
-  "hash": "c4fe071a26498cdc445131cde97bf539e25ea325058ca12fec50f27f3865b3b0"
+  "hash": "7f356a085650d1c0838ea6d0c7560677fdfdee224ab018b8b2c6616ef7f77671"
 }

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *",
+  "query": "SELECT id,name, email, password, photo,verified,created_at,updated_at,role as \"role: UserRole\" FROM users WHERE email = $1",
   "describe": {
     "columns": [
       {
@@ -20,40 +20,49 @@
       },
       {
         "ordinal": 3,
-        "name": "photo",
-        "type_info": "Varchar"
-      },
-      {
-        "ordinal": 4,
-        "name": "verified",
-        "type_info": "Bool"
-      },
-      {
-        "ordinal": 5,
         "name": "password",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 6,
-        "name": "role",
+        "ordinal": 4,
+        "name": "photo",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 7,
+        "ordinal": 5,
+        "name": "verified",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 6,
         "name": "created_at",
         "type_info": "Timestamptz"
       },
       {
-        "ordinal": 8,
+        "ordinal": 7,
         "name": "updated_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "role: UserRole",
+        "type_info": {
+          "Custom": {
+            "name": "user_role",
+            "kind": {
+              "Enum": [
+                "admin",
+                "moderator",
+                "user"
+              ]
+            }
+          }
+        }
       }
     ],
     "parameters": {
       "Left": [
-        "Varchar",
-        "Varchar",
-        "Varchar"
+        "Text"
       ]
     },
     "nullable": [
@@ -63,10 +72,10 @@
       false,
       false,
       false,
-      false,
       true,
-      true
+      true,
+      false
     ]
   },
-  "hash": "d538beddb3834e079b5814e31d355a7db8ace2af5126c0188c6e24d7766d9dea"
+  "hash": "8fd6cd21bdbef653c5a921615d65656fe3592659e6babc4c057535b73481d6cb"
 }
