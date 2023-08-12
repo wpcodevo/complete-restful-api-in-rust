@@ -1,6 +1,8 @@
 -- Add up migration script here
 
+CREATE TYPE user_role AS ENUM ('admin', 'moderator', 'user');
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 
 CREATE TABLE
     "users" (
@@ -10,7 +12,7 @@ CREATE TABLE
         photo VARCHAR NOT NULL DEFAULT 'default.png',
         verified BOOLEAN NOT NULL DEFAULT FALSE,
         password VARCHAR(100) NOT NULL,
-        role VARCHAR(50) NOT NULL DEFAULT 'user',
+        role user_role NOT NULL DEFAULT 'user',
         created_at TIMESTAMP
         WITH
             TIME ZONE DEFAULT NOW(),

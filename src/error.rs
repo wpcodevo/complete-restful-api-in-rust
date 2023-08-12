@@ -2,8 +2,9 @@ use std::fmt;
 
 use actix_web::{HttpResponse, ResponseError};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct Response {
     pub status: &'static str,
     pub message: String,
@@ -20,6 +21,8 @@ pub enum ErrorMessage {
     WrongCredentials,
     EmailExist,
     UserNoLongerExist,
+    TokenNotProvided,
+    PermissionDenied,
 }
 
 impl ToString for ErrorMessage {
@@ -50,6 +53,12 @@ impl ErrorMessage {
                 format!("Password must not be more than {} characters", max_length)
             }
             ErrorMessage::InvalidToken => "Authentication token is invalid or expired".to_string(),
+            ErrorMessage::TokenNotProvided => {
+                "You are not logged in, please provide token".to_string()
+            }
+            ErrorMessage::PermissionDenied => {
+                "You are not allowed to perform this action".to_string()
+            }
         }
     }
 }

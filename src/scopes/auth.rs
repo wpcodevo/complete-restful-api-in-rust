@@ -11,7 +11,7 @@ use crate::{
         UserResponseDto,
     },
     error::{ErrorMessage, HttpError},
-    extractors::authentication_token,
+    extractors::auth::RequireAuth,
     utils::{password, token},
     AppState,
 };
@@ -20,13 +20,28 @@ pub fn auth_scope() -> Scope {
     web::scope("/api/auth")
         .route("/register", web::post().to(register))
         .route("/login", web::post().to(login))
-        .route("/logout", web::post().to(logout))
+        .route("/logout", web::post().to(logout).wrap(RequireAuth))
 }
 
-async fn register(
+#[utoipa::path(
+    post,
+    path = "/api/auth/register",
+    tag = "Register Account Endpoint",
+    request_body(content = RegisterUserDto, description = "Credentials to create account"),
+    responses(
+        (status=201, description= "Account created successfully", body= UserResponseDto ),
+        (status=400, description= "Validation Errors", body= Response),
+        (status=409, description= "User with email already exists", body= Response),
+        (status=500, description= "Internal Server Error", body= Response ),
+    )
+)]
+pub async fn register(
     app_state: web::Data<AppState>,
     body: web::Json<RegisterUserDto>,
 ) -> Result<HttpResponse, HttpError> {
+    body.validate()
+        .map_err(|e| HttpError::bad_request(e.to_string()))?;
+
     let hashed_password =
         password::hash(&body.password).map_err(|e| HttpError::server_error(e.to_string()))?;
 
@@ -39,7 +54,7 @@ async fn register(
         Ok(user) => Ok(HttpResponse::Created().json(UserResponseDto {
             status: "success".to_string(),
             data: UserData {
-                user: FilterUserDto::filter(&user),
+                user: FilterUserDto::filter_user(&user),
             },
         })),
         Err(sqlx::Error::Database(db_err)) => {
@@ -55,7 +70,18 @@ async fn register(
     }
 }
 
-async fn login(
+#[utoipa::path(
+    post,
+    path = "/api/auth/login",
+    tag = "Login Endpoint",
+    request_body(content = LoginUserDto, description = "Credentials to log in to your account"),
+    responses(
+        (status=200, description= "Login successfull", body= UserLoginResponseDto ),
+        (status=400, description= "Validation Errors", body= Response ),
+        (status=500, description= "Internal Server Error", body= Response ),
+    )
+)]
+pub async fn login(
     app_state: web::Data<AppState>,
     body: web::Json<LoginUserDto>,
 ) -> Result<HttpResponse, HttpError> {
@@ -97,7 +123,21 @@ async fn login(
     }
 }
 
-async fn logout(_: authentication_token::AuthMiddleware) -> impl Responder {
+#[utoipa::path(
+    post,
+    path = "/api/auth/logout",
+    tag = "Logout Endpoint",
+    responses(
+        (status=200, description= "Logout successfull" ),
+        (status=400, description= "Validation Errors", body= Response ),
+        (status=401, description= "Unauthorize Error", body= Response),
+        (status=500, description= "Internal Server Error", body= Response ),
+    ),
+    security(
+       ("token" = [])
+   )
+)]
+pub async fn logout() -> impl Responder {
     let cookie = Cookie::build("token", "")
         .path("/")
         .max_age(ActixWebDuration::new(-1, 0))

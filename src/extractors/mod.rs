@@ -1,1 +1,1 @@
-pub mod authentication_token;
+pub mod auth;
