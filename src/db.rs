@@ -31,6 +31,12 @@ pub trait UserExt {
         email: T,
         password: T,
     ) -> Result<User, sqlx::Error>;
+    async fn save_admin_user<T: Into<String> + Send>(
+        &self,
+        name: T,
+        email: T,
+        password: T,
+    ) -> Result<User, sqlx::Error>;
 }
 
 #[async_trait]
@@ -88,6 +94,26 @@ impl UserExt for DBClient {
             name.into(),
             email.into(),
             password.into()
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(user)
+    }
+
+    async fn save_admin_user<T: Into<String> + Send>(
+        &self,
+        name: T,
+        email: T,
+        password: T,
+    ) -> Result<User, sqlx::Error> {
+        let user = sqlx::query_as!(
+            User,
+            r#"INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id,name, email, password, photo,verified,created_at,updated_at,role as "role: UserRole""#,
+            name.into(),
+            email.into(),
+            password.into(),
+            UserRole::Admin as UserRole
         )
         .fetch_one(&self.pool)
         .await?;

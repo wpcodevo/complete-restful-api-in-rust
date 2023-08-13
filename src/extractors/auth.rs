@@ -156,7 +156,6 @@ mod tests {
     use crate::{
         db::DBClient,
         extractors::auth::{RequireAuth, RequireOnlyAdmin},
-        models::{User, UserRole},
         utils::{password, test_utils::get_test_config, token},
     };
 
@@ -339,17 +338,10 @@ mod tests {
         let config = get_test_config();
 
         let hashed_password = password::hash("password123").unwrap();
-
-        let user = sqlx::query_as!(
-            User,
-            r#"INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id,name, email, password, photo,verified,created_at,updated_at,role as "role: UserRole""#,
-            "John Doe".to_string(),
-            "johndoe@gmail.com".to_string(),
-            hashed_password,
-            UserRole::Admin as UserRole
-        )
-        .fetch_one(&pool)
-        .await.unwrap();
+        let user = db_client
+            .save_admin_user("John Doe", "johndoe@gmail.com", &hashed_password)
+            .await
+            .unwrap();
 
         let token =
             token::create_token(&user.id.to_string(), config.jwt_secret.as_bytes(), 60).unwrap();
