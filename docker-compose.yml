@@ -1,19 +1,19 @@
 version: '3'
 
 services:
-  # api-rust:
-  #   image: edemziddah/api-rust
-  #   container_name: api-rust
-  #   restart: unless-stopped
-  #   environment:
-  #     DATABASE_URL: ${DATABASE_URL}
-  #     JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-  #     JWT_MAXAGE: ${JWT_MAXAGE}
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - postgres
+  api-rust:
+    image: edemziddah/api-rust
+    container_name: api-rust
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_MAXAGE: ${JWT_MAXAGE}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
       
   postgres:
     image: postgres:15.3-alpine
