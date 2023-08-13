@@ -51,7 +51,7 @@ jobs:
         run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
 
       - name: Run SQLx Database Migrations
-        run: sqlx database setup
+        run: sqlx migrate run
 
       - name: Build and test code
         run: |
@@ -116,4 +116,4 @@ jobs:
             export PGADMIN_LISTEN_PORT=${{secrets.PGADMIN_LISTEN_PORT}}
             docker-compose down
             docker-compose pull
-            docker-compose -f docker-compose.yml up -d
+            docker-compose up -d
