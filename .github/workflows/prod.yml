@@ -71,8 +71,6 @@ jobs:
         uses: docker/bake-action@v2.3.0
         with:
           push: true
-          files:
-            - docker-compose.prod.yml
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
@@ -96,8 +94,8 @@ jobs:
       - name: Copy Caddyfile to vps_server
         run: sshpass -v -p '${{ secrets.VPS_PASSWORD }}' scp -o StrictHostKeyChecking=no Caddyfile root@${{ secrets.VPS_IP }}:~
 
-      - name: Copy docker-compose.prod.yml to vps_server
-        run: sshpass -v -p '${{ secrets.VPS_PASSWORD }}' scp -o StrictHostKeyChecking=no docker-compose.prod.yml root@${{ secrets.VPS_IP }}:~
+      - name: Copy docker-compose.yml to vps_server
+        run: sshpass -v -p '${{ secrets.VPS_PASSWORD }}' scp -o StrictHostKeyChecking=no docker-compose.yml root@${{ secrets.VPS_IP }}:~
 
       - name: Deploy
         uses: appleboy/ssh-action@master
@@ -118,4 +116,4 @@ jobs:
             export PGADMIN_LISTEN_PORT=${{secrets.PGADMIN_LISTEN_PORT}}
             docker-compose down
             docker-compose pull
-            docker-compose -f docker-compose.prod.yml up -d
+            docker-compose -f docker-compose.yml up -d

@@ -1,27 +1,23 @@
 version: '3'
 
 services:
-  # api-rust:
-  #   image: edemziddah/api-rust
-  #   container_name: api-rust
-  #   restart: unless-stopped
-  #   ports:
-  #     - "8000:8000"
-  #   environment:
-  #     DATABASE_URL: ${DATABASE_URL}
-  #     JWT_SECRET_KEY: ${JWT_SECRET_KEY}
-  #     JWT_MAXAGE: ${JWT_MAXAGE}
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - postgres
+  api-rust:
+    image: edemziddah/api-rust
+    container_name: api-rust
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_MAXAGE: ${JWT_MAXAGE}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
       
   postgres:
     image: postgres:15.3-alpine
     container_name: postgres
-    ports:
-    - 6500:5432
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -37,8 +33,6 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
-    ports:
-      - 5050:80
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
@@ -49,6 +43,21 @@ services:
     depends_on:
       - postgres
   
+  caddy:
+    image: caddy/caddy:2.7.2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/site:/services
+      - caddy_data:/data
+      - caddy_config:/config
+
 volumes:
   postgres:
   pgadmin-data:
+  caddy_data:
+  caddy_config:
