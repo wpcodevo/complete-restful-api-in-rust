@@ -27,7 +27,7 @@ pub fn auth_scope() -> Scope {
     post,
     path = "/api/auth/register",
     tag = "Register Account Endpoint",
-    request_body(content = RegisterUserDto, description = "Credentials to create account"),
+    request_body(content = RegisterUserDto, description = "Credentials to create account", example = json!({"email": "johndoe@example.com","name": "John Doe","password": "password123","passwordConfirm": "password123"})),
     responses(
         (status=201, description= "Account created successfully", body= UserResponseDto ),
         (status=400, description= "Validation Errors", body= Response),
@@ -74,7 +74,7 @@ pub async fn register(
     post,
     path = "/api/auth/login",
     tag = "Login Endpoint",
-    request_body(content = LoginUserDto, description = "Credentials to log in to your account"),
+    request_body(content = LoginUserDto, description = "Credentials to log in to your account", example = json!({"email": "johndoe@example.com","password": "password123"})),
     responses(
         (status=200, description= "Login successfull", body= UserLoginResponseDto ),
         (status=400, description= "Validation Errors", body= Response ),
