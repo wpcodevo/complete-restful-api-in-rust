@@ -24,12 +24,7 @@ pub trait UserExt {
         name: Option<&str>,
         email: Option<&str>,
     ) -> Result<Option<User>, sqlx::Error>;
-    async fn get_users(
-        &self,
-        query: impl Into<String> + Send,
-        page: u32,
-        limit: usize,
-    ) -> Result<Vec<User>, sqlx::Error>;
+    async fn get_users(&self, page: u32, limit: usize) -> Result<Vec<User>, sqlx::Error>;
     async fn save_user<T: Into<String> + Send>(
         &self,
         name: T,
@@ -65,22 +60,13 @@ impl UserExt for DBClient {
         Ok(user)
     }
 
-    async fn get_users(
-        &self,
-        query: impl Into<String> + Send,
-        page: u32,
-        limit: usize,
-    ) -> Result<Vec<User>, sqlx::Error> {
-        let query: String = format!("%{}%", &query.into());
-
+    async fn get_users(&self, page: u32, limit: usize) -> Result<Vec<User>, sqlx::Error> {
         let offset = (page - 1) * limit as u32;
 
         let users = sqlx::query_as!(
             User,
-            r#"SELECT id,name, email, password, photo,verified,created_at,updated_at,role as "role: UserRole" FROM users WHERE (name LIKE $1) OR (email LIKE $2)
-            LIMIT $3 OFFSET $4"#,
-            query,
-            query,
+            r#"SELECT id,name, email, password, photo,verified,created_at,updated_at,role as "role: UserRole" FROM users
+            LIMIT $1 OFFSET $2"#,
             limit as i64,
             offset as i64
         )
@@ -193,7 +179,7 @@ mod tests {
         init_test_users(&pool).await;
         let db_client = DBClient::new(pool);
 
-        let users = db_client.get_users("", 1, 10).await.unwrap();
+        let users = db_client.get_users(1, 10).await.unwrap();
 
         assert_eq!(users.len(), 3);
     }

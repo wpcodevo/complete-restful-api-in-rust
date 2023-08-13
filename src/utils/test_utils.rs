@@ -59,6 +59,5 @@ pub fn get_test_config() -> Config {
         jwt_secret: "my-jwt-secret".to_string(),
         jwt_maxage: 60,
         port: 8000,
-        run_migrations: false,
     }
 }

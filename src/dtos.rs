@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
-use crate::models::{User, UserRole};
+use crate::models::User;
 
 #[derive(Validate, Debug, Default, Clone, Serialize, Deserialize, ToSchema)]
 pub struct RegisterUserDto {
@@ -43,7 +43,6 @@ pub struct LoginUserDto {
 
 #[derive(Serialize, Deserialize, Validate, IntoParams)]
 pub struct RequestQueryDto {
-    pub query: Option<String>,
     #[validate(range(min = 1))]
     pub page: Option<usize>,
     #[validate(range(min = 1, max = 50))]
@@ -55,7 +54,7 @@ pub struct FilterUserDto {
     pub id: String,
     pub name: String,
     pub email: String,
-    pub role: UserRole,
+    pub role: String,
     pub photo: String,
     pub verified: bool,
     #[serde(rename = "createdAt")]
@@ -71,7 +70,7 @@ impl FilterUserDto {
             email: user.email.to_owned(),
             name: user.name.to_owned(),
             photo: user.photo.to_owned(),
-            role: user.role.clone(),
+            role: user.role.to_str().to_string(),
             verified: user.verified,
             created_at: user.created_at.unwrap(),
             updated_at: user.updated_at.unwrap(),

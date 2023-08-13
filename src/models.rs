@@ -10,6 +10,16 @@ pub enum UserRole {
     User,
 }
 
+impl UserRole {
+    pub fn to_str(&self) -> &str {
+        match self {
+            UserRole::Admin => "admin",
+            UserRole::User => "user",
+            UserRole::Moderator => "moderator",
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, sqlx::FromRow, sqlx::Type, Serialize, Clone)]
 pub struct User {
     pub id: uuid::Uuid,
