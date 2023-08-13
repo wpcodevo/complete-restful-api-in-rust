@@ -53,6 +53,9 @@ jobs:
       - name: Run SQLx Database Migrations
         run: sqlx migrate run
 
+      - name: Generate SQLX Prepared Queries
+        run: cargo sqlx prepare
+
       - name: Build and test code
         run: |
           cargo build --verbose
