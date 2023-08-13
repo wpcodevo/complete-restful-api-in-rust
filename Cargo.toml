@@ -27,6 +27,8 @@ sqlx = { version = "0.7.1", features = [
     "uuid",
 ] }
 utoipa = { version = "3.4.4", features = ["actix_extras", "chrono"] }
+utoipa-rapidoc = { version = "0.1.0", features = ["actix-web"] }
+utoipa-redoc = { version = "0.1.0", features = ["actix-web"] }
 utoipa-swagger-ui = { version = "3.1.5", features = ["actix-web"] }
 uuid = { version = "1.4.1", features = ["serde", "v4"] }
 validator = { version = "0.16.1", features = ["derive"] }

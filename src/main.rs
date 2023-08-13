@@ -27,6 +27,8 @@ use utoipa::{
     openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme},
     Modify, OpenApi,
 };
+use utoipa_rapidoc::RapiDoc;
+use utoipa_redoc::{Redoc, Servable};
 use utoipa_swagger_ui::SwaggerUi;
 
 #[derive(Debug, Clone)]
@@ -122,6 +124,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .service(scopes::auth::auth_scope())
             .service(scopes::users::users_scope())
             .service(health_checker_handler)
+            .service(Redoc::with_url("/redoc", openapi.clone()))
+            .service(RapiDoc::new("/api-docs/openapi.json").path("/rapidoc"))
             .service(SwaggerUi::new("/{_:.*}").url("/api-docs/openapi.json", openapi.clone()))
     })
     .bind(("0.0.0.0", config.port))?
