@@ -123,3 +123,8 @@ jobs:
             docker-compose down
             docker-compose pull
             docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+      - name: Test if containers are running
+        run: |
+          sshpass -v -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} \
+            'docker ps -a --format "{{.Names}}" | grep "api-rust\|postgres\|pgadmin"'
