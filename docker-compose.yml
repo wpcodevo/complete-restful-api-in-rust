@@ -12,8 +12,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    depends_on:
-      - postgres
+    networks:
+      - rust_app_network
       
   postgres:
     image: postgres:15.3-alpine
@@ -29,6 +29,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - rust_app_network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -42,22 +44,12 @@ services:
     restart: always
     depends_on:
       - postgres
-  
-  caddy:
-    image: caddy/caddy:2.7.2-alpine
-    container_name: caddy
-    restart: unless-stopped
-    ports:
-      - 443:443
-      - 80:80
-    volumes:
-      - $PWD/Caddyfile:/etc/caddy/Caddyfile
-      - $PWD/site:/services
-      - caddy_data:/data
-      - caddy_config:/config
+    networks:
+      - rust_app_network
 
 volumes:
   postgres:
   pgadmin-data:
-  caddy_data:
-  caddy_config:
+
+networks:
+  rust_app_network:

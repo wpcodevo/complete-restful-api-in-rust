@@ -5,7 +5,6 @@ mod error;
 mod extractors;
 mod models;
 mod scopes;
-mod success;
 mod utils;
 
 use actix_cors::Cors;
