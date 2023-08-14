@@ -20,6 +20,7 @@ install:
 	cargo add async-trait
 	cargo add serde -F derive
 	cargo add chrono -F serde
+	cargo add futures-util
 	cargo add env_logger
 	cargo add dotenv
 	cargo add uuid -F "serde v4"
@@ -28,10 +29,14 @@ install:
 	cargo add argon2
 	cargo add openssl-probe
 	cargo add validator -F derive
+	cargo add utoipa -F "chrono actix_extras"
+	cargo add utoipa-rapidoc -F actix-web
+	cargo add utoipa-redoc -F actix-web
+	cargo add utoipa-swagger-ui -F actix-web
 	# HotReload
 	cargo install cargo-watch
 	# SQLX-CLI
-	cargo install sqlx-cli --no-defaultF --features postgres
+	cargo install sqlx-cli --no-default-features --features postgres
 	# Deploy
 	sudo apt-get update
 	sudo apt-get install docker.io
