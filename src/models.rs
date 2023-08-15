@@ -1,8 +1,7 @@
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
 
-#[derive(Debug, Deserialize, Serialize, Clone, Copy, sqlx::Type, PartialEq, ToSchema)]
+#[derive(Debug, Deserialize, Serialize, Clone, Copy, sqlx::Type, PartialEq)]
 #[sqlx(type_name = "user_role", rename_all = "lowercase")]
 pub enum UserRole {
     Admin,

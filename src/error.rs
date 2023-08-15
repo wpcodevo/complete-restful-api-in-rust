@@ -2,7 +2,6 @@ use std::fmt;
 
 use actix_web::{HttpResponse, ResponseError};
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ErrorResponse {
@@ -16,7 +15,7 @@ impl fmt::Display for ErrorResponse {
     }
 }
 
-#[derive(Serialize, Deserialize, ToSchema)]
+#[derive(Serialize, Deserialize)]
 pub struct Response {
     pub status: &'static str,
     pub message: String,

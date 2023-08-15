@@ -27,17 +27,8 @@ install:
 	cargo add sqlx -F "tls-native-tls runtime-async-std postgres chrono uuid"
 	cargo add jsonwebtoken
 	cargo add argon2
-	cargo add openssl-probe
 	cargo add validator -F derive
-	cargo add utoipa -F "chrono actix_extras"
-	cargo add utoipa-rapidoc -F actix-web
-	cargo add utoipa-redoc -F actix-web
-	cargo add utoipa-swagger-ui -F actix-web
 	# HotReload
 	cargo install cargo-watch
 	# SQLX-CLI
 	cargo install sqlx-cli --no-default-features --features postgres
-	# Deploy
-	sudo apt-get update
-	sudo apt-get install docker.io
-	sudo apt-get install docker-compose
