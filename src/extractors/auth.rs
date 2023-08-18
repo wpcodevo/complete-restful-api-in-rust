@@ -150,7 +150,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use actix_web::{get, test, App, HttpResponse};
+    use actix_web::{cookie::Cookie, get, test, App, HttpResponse};
     use sqlx::{Pool, Postgres};
 
     use crate::{
@@ -198,6 +198,40 @@ mod tests {
 
         let req = test::TestRequest::default()
             .insert_header((http::header::AUTHORIZATION, format!("Bearer {}", token)))
+            .to_request();
+
+        let resp = test::call_service(&app, req).await;
+
+        assert_eq!(resp.status(), http::StatusCode::OK);
+    }
+
+    #[sqlx::test]
+    async fn test_auth_middelware_valid_token_with_cookie(pool: Pool<Postgres>) {
+        let db_client = DBClient::new(pool);
+        let config = get_test_config();
+
+        let hashed_password = password::hash("password123").unwrap();
+
+        let user = db_client
+            .save_user("John", "john@example.com", &hashed_password)
+            .await
+            .unwrap();
+
+        let token =
+            token::create_token(&user.id.to_string(), config.jwt_secret.as_bytes(), 60).unwrap();
+
+        let app = test::init_service(
+            App::new()
+                .app_data(web::Data::new(AppState {
+                    env: config.clone(),
+                    db_client,
+                }))
+                .service(handler_with_requireauth),
+        )
+        .await;
+
+        let req = test::TestRequest::default()
+            .cookie(Cookie::new("token", token))
             .to_request();
 
         let resp = test::call_service(&app, req).await;

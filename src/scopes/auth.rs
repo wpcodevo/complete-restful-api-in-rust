@@ -285,6 +285,46 @@ mod tests {
     }
 
     #[sqlx::test]
+    async fn test_login_valid_credentials_receive_cookie(pool: Pool<Postgres>) {
+        let db_client = DBClient::new(pool.clone());
+        let config = get_test_config();
+
+        let hashed_password = password::hash("password123").unwrap();
+
+        db_client
+            .save_user("John", "john@example.com", &hashed_password)
+            .await
+            .unwrap();
+
+        let app = test::init_service(
+            App::new()
+                .app_data(web::Data::new(AppState {
+                    env: config.clone(),
+                    db_client,
+                }))
+                .service(web::scope("/api/auth").route("/login", web::post().to(login))),
+        )
+        .await;
+
+        let req = test::TestRequest::post()
+            .uri("/api/auth/login")
+            .set_json(LoginUserDto {
+                email: "john@example.com".to_string(),
+                password: "password123".to_string(),
+            })
+            .to_request();
+
+        let resp = test::call_service(&app, req).await;
+
+        let token_cookie = resp
+            .response()
+            .cookies()
+            .find(|cookie| cookie.name() == "token");
+
+        assert!(token_cookie.is_some());
+    }
+
+    #[sqlx::test]
     async fn test_login_with_nonexistent_user_credentials(pool: Pool<Postgres>) {
         let db_client = DBClient::new(pool.clone());
         let config = get_test_config();
