@@ -2,7 +2,8 @@ use std::fmt;
 
 use actix_web::{HttpResponse, ResponseError};
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+
+use crate::dtos::Response;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ErrorResponse {
@@ -14,12 +15,6 @@ impl fmt::Display for ErrorResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", serde_json::to_string(&self).unwrap())
     }
-}
-
-#[derive(Serialize, Deserialize, ToSchema)]
-pub struct Response {
-    pub status: &'static str,
-    pub message: String,
 }
 
 #[derive(Debug, PartialEq)]

@@ -15,10 +15,9 @@ use config::Config;
 use db::DBClient;
 use dotenv::dotenv;
 use dtos::{
-    FilterUserDto, LoginUserDto, RegisterUserDto, UserData, UserListResponseDto,
+    FilterUserDto, LoginUserDto, RegisterUserDto, Response, UserData, UserListResponseDto,
     UserLoginResponseDto, UserResponseDto,
 };
-use error::Response;
 use models::UserRole;
 use scopes::{auth, users};
 use sqlx::postgres::PgPoolOptions;
