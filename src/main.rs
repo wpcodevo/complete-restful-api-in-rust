@@ -18,7 +18,6 @@ use dtos::{
     FilterUserDto, LoginUserDto, RegisterUserDto, Response, UserData, UserListResponseDto,
     UserLoginResponseDto, UserResponseDto,
 };
-use models::UserRole;
 use scopes::{auth, users};
 use sqlx::postgres::PgPoolOptions;
 use utoipa::{
@@ -41,7 +40,7 @@ pub struct AppState {
         auth::login,auth::logout,auth::register, users::get_me, users::get_users, health_checker_handler
     ),
     components(
-        schemas(UserData,FilterUserDto,LoginUserDto,RegisterUserDto,UserResponseDto,UserLoginResponseDto,Response,UserListResponseDto,UserRole)
+        schemas(UserData,FilterUserDto,LoginUserDto,RegisterUserDto,UserResponseDto,UserLoginResponseDto,Response,UserListResponseDto)
     ),
     tags(
         (name = "Rust REST API", description = "Authentication in Rust Endpoints")
