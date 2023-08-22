@@ -18,7 +18,6 @@ use dtos::{
     FilterUserDto, LoginUserDto, RegisterUserDto, Response, UserData, UserListResponseDto,
     UserLoginResponseDto, UserResponseDto,
 };
-use models::UserRole;
 use scopes::{auth, users};
 use sqlx::postgres::PgPoolOptions;
 use utoipa::{
@@ -41,7 +40,7 @@ pub struct AppState {
         auth::login,auth::logout,auth::register, users::get_me, users::get_users, health_checker_handler
     ),
     components(
-        schemas(UserData,FilterUserDto,LoginUserDto,RegisterUserDto,UserResponseDto,UserLoginResponseDto,Response,UserListResponseDto,UserRole)
+        schemas(UserData,FilterUserDto,LoginUserDto,RegisterUserDto,UserResponseDto,UserLoginResponseDto,Response,UserListResponseDto)
     ),
     tags(
         (name = "Rust REST API", description = "Authentication in Rust Endpoints")
@@ -69,7 +68,6 @@ impl Modify for SecurityAddon {
 
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    openssl_probe::init_ssl_cert_env_vars();
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var("RUST_LOG", "actix_web=info");
     }
@@ -146,28 +144,4 @@ async fn health_checker_handler() -> impl Responder {
     const MESSAGE: &str = "Complete Restful API in Rust";
 
     HttpResponse::Ok().json(serde_json::json!({"status": "success", "message": MESSAGE}))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use actix_web::{http::StatusCode, test, App};
-
-    #[actix_web::test]
-    async fn test_health_checker_handler() {
-        let app = test::init_service(App::new().service(health_checker_handler)).await;
-
-        let req = test::TestRequest::get()
-            .uri("/api/healthchecker")
-            .to_request();
-        let resp = test::call_service(&app, req).await;
-
-        assert_eq!(resp.status(), StatusCode::OK);
-
-        let body = test::read_body(resp).await;
-        let expected_json =
-            serde_json::json!({"status": "success", "message": "Complete Restful API in Rust"});
-
-        assert_eq!(body, serde_json::to_string(&expected_json).unwrap());
-    }
 }

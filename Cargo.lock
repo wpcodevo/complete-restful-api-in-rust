@@ -600,7 +600,6 @@ dependencies = [
  "env_logger",
  "futures-util",
  "jsonwebtoken",
- "openssl-probe",
  "serde",
  "serde_json",
  "sqlx",
