@@ -2,11 +2,13 @@ use actix_web::dev::{Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::error::{ErrorForbidden, ErrorInternalServerError, ErrorUnauthorized};
 use actix_web::{http, web, HttpMessage};
 use futures_util::future::{ready, LocalBoxFuture, Ready};
+use futures_util::FutureExt;
+use std::rc::Rc;
 use std::task::{Context, Poll};
 
 use crate::db::UserExt;
 use crate::error::{ErrorMessage, ErrorResponse, HttpError};
-use crate::models::UserRole;
+use crate::models::{User, UserRole};
 use crate::{utils, AppState};
 
 pub struct RequireAuth;
@@ -14,11 +16,10 @@ pub struct RequireAuth;
 impl<S> Transform<S, ServiceRequest> for RequireAuth
 where
     S: Service<
-        ServiceRequest,
-        Response = ServiceResponse<actix_web::body::BoxBody>,
-        Error = actix_web::Error,
-    >,
-    S::Future: 'static,
+            ServiceRequest,
+            Response = ServiceResponse<actix_web::body::BoxBody>,
+            Error = actix_web::Error,
+        > + 'static,
 {
     type Response = ServiceResponse<actix_web::body::BoxBody>;
     type Error = actix_web::Error;
@@ -28,7 +29,7 @@ where
 
     fn new_transform(&self, service: S) -> Self::Future {
         ready(Ok(AuthMiddleware {
-            service,
+            service: Rc::new(service),
             allowed_roles: vec![UserRole::User, UserRole::Moderator, UserRole::Admin],
         }))
     }
@@ -39,11 +40,10 @@ pub struct RequireOnlyAdmin;
 impl<S> Transform<S, ServiceRequest> for RequireOnlyAdmin
 where
     S: Service<
-        ServiceRequest,
-        Response = ServiceResponse<actix_web::body::BoxBody>,
-        Error = actix_web::Error,
-    >,
-    S::Future: 'static,
+            ServiceRequest,
+            Response = ServiceResponse<actix_web::body::BoxBody>,
+            Error = actix_web::Error,
+        > + 'static,
 {
     type Response = ServiceResponse<actix_web::body::BoxBody>;
     type Error = actix_web::Error;
@@ -53,25 +53,24 @@ where
 
     fn new_transform(&self, service: S) -> Self::Future {
         ready(Ok(AuthMiddleware {
-            service,
+            service: Rc::new(service),
             allowed_roles: vec![UserRole::Admin],
         }))
     }
 }
 
 pub struct AuthMiddleware<S> {
-    service: S,
+    service: Rc<S>,
     allowed_roles: Vec<UserRole>,
 }
 
 impl<S> Service<ServiceRequest> for AuthMiddleware<S>
 where
     S: Service<
-        ServiceRequest,
-        Response = ServiceResponse<actix_web::body::BoxBody>,
-        Error = actix_web::Error,
-    >,
-    S::Future: 'static,
+            ServiceRequest,
+            Response = ServiceResponse<actix_web::body::BoxBody>,
+            Error = actix_web::Error,
+        > + 'static,
 {
     type Response = ServiceResponse<actix_web::body::BoxBody>;
     type Error = actix_web::Error;
@@ -113,14 +112,12 @@ where
             }
         };
 
-        let user_id = uuid::Uuid::parse_str(user_id.as_str()).unwrap();
-        req.extensions_mut().insert::<uuid::Uuid>(user_id);
-
         let cloned_app_state = app_state.clone();
         let allowed_roles = self.allowed_roles.clone();
-        let future = self.service.call(req);
+        let srv = Rc::clone(&self.service);
 
-        Box::pin(async move {
+        async move {
+            let user_id = uuid::Uuid::parse_str(user_id.as_str()).unwrap();
             let result = cloned_app_state
                 .db_client
                 .get_user(Some(user_id.clone()), None, None)
@@ -134,9 +131,9 @@ where
 
             // Check if user's role matches the required role
             if allowed_roles.contains(&user.role) {
-                let response = future.await?;
-                // req.extensions_mut().insert::<User>(user);
-                Ok(response)
+                req.extensions_mut().insert::<User>(user);
+                let res = srv.call(req).await?;
+                Ok(res)
             } else {
                 let json_error = ErrorResponse {
                     status: "fail".to_string(),
@@ -144,7 +141,8 @@ where
                 };
                 Err(ErrorForbidden(json_error))
             }
-        })
+        }
+        .boxed_local()
     }
 }
 
