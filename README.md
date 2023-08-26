@@ -64,3 +64,36 @@ In this article, you will learn how to integrate Swagger UI, Redoc, and RapiDoc 
   
 Read the entire article here: [https://codevoweb.com/add-swagger-ui-redoc-and-rapidoc-to-a-rust-api/](https://codevoweb.com/add-swagger-ui-redoc-and-rapidoc-to-a-rust-api/)
 
+## 3. JWT Authentication and Authorization in Rust API using Actix-Web
+
+In this article, you will learn how to implement JWT Authentication and Authorization in Rust using Actix-Web extractors (middleware).
+
+![JWT Authentication and Authorization in Rust API using Actix-Web](https://codevoweb.com/wp-content/uploads/2023/08/JWT-Authentication-and-Authorization-in-Rust-API-using-Actix-Web.webp)
+
+### Topics Covered
+
+- Middleware Example in TypeScript
+  - Authentication Middleware Guard
+  - Authorization Middleware Guard
+- Understanding How Middleware Works in Actix-Web
+  - Exploring the Service Trait
+  - Exploring the Transform Trait
+- Signing and Verifying JSON Web Tokens (JWTs)
+- Creating a JWT Middleware using Actix-Web Extractor
+  - Creating the Middleware
+  - Creating a Middleware Factory
+  - Using the Middleware Factory
+  - Writing Unit Tests for the JWT Middleware
+- Adding JWT Authorization to the Actix-Web Middleware
+  - Modifying the Authentication Middleware
+  - Modifying the Middleware Factory
+  - Using the Middleware Factory
+  - Writing Unit Tests for the Authorization Logic
+- Retrieving the User Information
+  - Using Only the Request Extension
+  - Using an Actix-Web Extractor
+- Conclusion
+  
+  
+Read the entire article here: [https://codevoweb.com/jwt-authentication-and-authorization-in-rust-api/](https://codevoweb.com/jwt-authentication-and-authorization-in-rust-api/)
+
