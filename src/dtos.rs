@@ -1,11 +1,10 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
 use crate::models::User;
 
-#[derive(Validate, Debug, Default, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Validate, Debug, Default, Clone, Serialize, Deserialize)]
 pub struct RegisterUserDto {
     #[validate(length(min = 1, message = "Name is required"))]
     pub name: String,
@@ -27,7 +26,7 @@ pub struct RegisterUserDto {
     pub password_confirm: String,
 }
 
-#[derive(Validate, Debug, Default, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Validate, Debug, Default, Clone, Serialize, Deserialize)]
 pub struct LoginUserDto {
     #[validate(
         length(min = 1, message = "Email is required"),
@@ -41,7 +40,7 @@ pub struct LoginUserDto {
     pub password: String,
 }
 
-#[derive(Serialize, Deserialize, Validate, IntoParams)]
+#[derive(Serialize, Deserialize, Validate)]
 pub struct RequestQueryDto {
     #[validate(range(min = 1))]
     pub page: Option<usize>,
@@ -49,7 +48,7 @@ pub struct RequestQueryDto {
     pub limit: Option<usize>,
 }
 
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct FilterUserDto {
     pub id: String,
     pub name: String,
@@ -82,31 +81,31 @@ impl FilterUserDto {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UserData {
     pub user: FilterUserDto,
 }
 
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UserResponseDto {
     pub status: String,
     pub data: UserData,
 }
 
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UserListResponseDto {
     pub status: String,
     pub users: Vec<FilterUserDto>,
     pub results: usize,
 }
 
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UserLoginResponseDto {
     pub status: String,
     pub token: String,
 }
 
-#[derive(Serialize, Deserialize, ToSchema)]
+#[derive(Serialize, Deserialize)]
 pub struct Response {
     pub status: &'static str,
     pub message: String,

@@ -28,19 +28,6 @@ pub fn users_scope() -> Scope {
         )
 }
 
-#[utoipa::path(
-    get,
-    path = "/api/users/me",
-    tag = "Get Authenticated User Endpoint",
-    responses(
-        (status = 200, description= "Authenticated User", body = UserResponseDto),
-        (status= 500, description= "Internal Server Error", body = Response )
-       
-    ),
-    security(
-       ("token" = [])
-   )
-)]
 async fn get_me(user: Authenticated) -> Result<HttpResponse, HttpError> {
     let filtered_user = FilterUserDto::filter_user(&user);
 
@@ -54,24 +41,6 @@ async fn get_me(user: Authenticated) -> Result<HttpResponse, HttpError> {
     Ok(HttpResponse::Ok().json(response_data))
 }
 
-#[utoipa::path(
-    get,
-    path = "/api/users",
-    tag = "Get All Users Endpoint",
-    params(
-        RequestQueryDto
-    ),
-    responses(
-        (status = 200, description= "All Users", body = [UserResponseDto]),
-        (status=401, description= "Authentication Error", body= Response),
-        (status=403, description= "Permission Denied Error", body= Response),
-        (status= 500, description= "Internal Server Error", body = Response )
-       
-    ),
-    security(
-       ("token" = [])
-   )
-)]
 pub async fn get_users(
     query: web::Query<RequestQueryDto>,
     app_state: web::Data<AppState>,

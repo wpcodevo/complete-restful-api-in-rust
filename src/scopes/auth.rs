@@ -31,18 +31,6 @@ pub fn auth_scope() -> Scope {
         )
 }
 
-#[utoipa::path(
-    post,
-    path = "/api/auth/register",
-    tag = "Register Account Endpoint",
-    request_body(content = RegisterUserDto, description = "Credentials to create account", example = json!({"email": "johndoe@example.com","name": "John Doe","password": "password123","passwordConfirm": "password123"})),
-    responses(
-        (status=201, description= "Account created successfully", body= UserResponseDto ),
-        (status=400, description= "Validation Errors", body= Response),
-        (status=409, description= "User with email already exists", body= Response),
-        (status=500, description= "Internal Server Error", body= Response ),
-    )
-)]
 pub async fn register(
     app_state: web::Data<AppState>,
     body: web::Json<RegisterUserDto>,
@@ -78,17 +66,6 @@ pub async fn register(
     }
 }
 
-#[utoipa::path(
-    post,
-    path = "/api/auth/login",
-    tag = "Login Endpoint",
-    request_body(content = LoginUserDto, description = "Credentials to log in to your account", example = json!({"email": "johndoe@example.com","password": "password123"})),
-    responses(
-        (status=200, description= "Login successfull", body= UserLoginResponseDto ),
-        (status=400, description= "Validation Errors", body= Response ),
-        (status=500, description= "Internal Server Error", body= Response ),
-    )
-)]
 pub async fn login(
     app_state: web::Data<AppState>,
     body: web::Json<LoginUserDto>,
@@ -131,20 +108,6 @@ pub async fn login(
     }
 }
 
-#[utoipa::path(
-    post,
-    path = "/api/auth/logout",
-    tag = "Logout Endpoint",
-    responses(
-        (status=200, description= "Logout successfull" ),
-        (status=400, description= "Validation Errors", body= Response ),
-        (status=401, description= "Unauthorize Error", body= Response),
-        (status=500, description= "Internal Server Error", body= Response ),
-    ),
-    security(
-       ("token" = [])
-   )
-)]
 pub async fn logout() -> impl Responder {
     let cookie = Cookie::build("token", "")
         .path("/")

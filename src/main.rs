@@ -14,19 +14,7 @@ use actix_web::{
 use config::Config;
 use db::DBClient;
 use dotenv::dotenv;
-use dtos::{
-    FilterUserDto, LoginUserDto, RegisterUserDto, Response, UserData, UserListResponseDto,
-    UserLoginResponseDto, UserResponseDto,
-};
-use scopes::{auth, users};
 use sqlx::postgres::PgPoolOptions;
-use utoipa::{
-    openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme},
-    Modify, OpenApi,
-};
-use utoipa_rapidoc::RapiDoc;
-use utoipa_redoc::{Redoc, Servable};
-use utoipa_swagger_ui::SwaggerUi;
 
 #[derive(Debug, Clone)]
 pub struct AppState {
@@ -34,41 +22,8 @@ pub struct AppState {
     pub db_client: DBClient,
 }
 
-#[derive(OpenApi)]
-#[openapi(
-    paths(
-        auth::login,auth::logout,auth::register, users::get_me, users::get_users, health_checker_handler
-    ),
-    components(
-        schemas(UserData,FilterUserDto,LoginUserDto,RegisterUserDto,UserResponseDto,UserLoginResponseDto,Response,UserListResponseDto)
-    ),
-    tags(
-        (name = "Rust REST API", description = "Authentication in Rust Endpoints")
-    ),
-    modifiers(&SecurityAddon)
-)]
-struct ApiDoc;
-
-struct SecurityAddon;
-
-impl Modify for SecurityAddon {
-    fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
-        let components = openapi.components.as_mut().unwrap();
-        components.add_security_scheme(
-            "token",
-            SecurityScheme::Http(
-                HttpBuilder::new()
-                    .scheme(HttpAuthScheme::Bearer)
-                    .bearer_format("JWT")
-                    .build(),
-            ),
-        )
-    }
-}
-
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    openssl_probe::init_ssl_cert_env_vars();
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var("RUST_LOG", "actix_web=info");
     }
@@ -99,8 +54,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         format!("Server is running on http://localhost:{}", config.port)
     );
 
-    let openapi = ApiDoc::openapi();
-
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("http://localhost:3000")
@@ -121,9 +74,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .service(scopes::auth::auth_scope())
             .service(scopes::users::users_scope())
             .service(health_checker_handler)
-            .service(Redoc::with_url("/redoc", openapi.clone()))
-            .service(RapiDoc::new("/api-docs/openapi.json").path("/rapidoc"))
-            .service(SwaggerUi::new("/{_:.*}").url("/api-docs/openapi.json", openapi.clone()))
     })
     .bind(("0.0.0.0", config.port))?
     .run()
@@ -132,14 +82,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-#[utoipa::path(
-    get,
-    path = "/api/healthchecker",
-    tag = "Health Checker Endpoint",
-    responses(
-        (status = 200, description= "Authenticated User", body = Response),       
-    )
-)]
 #[get("/api/healthchecker")]
 async fn health_checker_handler() -> impl Responder {
     const MESSAGE: &str = "Complete Restful API in Rust";
