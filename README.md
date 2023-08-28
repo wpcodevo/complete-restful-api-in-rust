@@ -97,3 +97,26 @@ In this article, you will learn how to implement JWT Authentication and Authoriz
   
 Read the entire article here: [https://codevoweb.com/jwt-authentication-and-authorization-in-rust-api/](https://codevoweb.com/jwt-authentication-and-authorization-in-rust-api/)
 
+## 4. How to Write Unit Tests for Your Rust API
+
+In this article, you will learn how to write unit tests for your Rust API project using the Actix-web framework and the SQLx toolkit. It's crucial to note that these tests are tailored specifically for the Rust API we've been creating in this tutorial series.
+
+![How to Write Unit Tests for Your Rust API](https://codevoweb.com/wp-content/uploads/2023/08/How-to-Write-Unit-Tests-for-Your-Rust-API.webp)
+
+### Topics Covered
+
+- Running the Unit Tests on Your Machine
+- What are Unit Tests?
+- Why Should We Perform Unit Testing on Our API?
+- Writing Unit Tests for the JWT Utility Functions
+- Writing Unit Tests for the Password Utility Functions
+- Creating Stubs
+- Writing Unit Tests for the Database Access Layer
+- Writing Unit Tests for the Middleware Guard
+- Writing Unit Tests for the Authentication Handlers
+- Writing Unit Tests for the User-Related Handlers
+- Conclusion
+  
+Read the entire article here: [https://codevoweb.com/how-to-write-unit-tests-for-your-rust-api/](https://codevoweb.com/how-to-write-unit-tests-for-your-rust-api/)
+
+
