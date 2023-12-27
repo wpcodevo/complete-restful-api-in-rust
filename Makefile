@@ -1,3 +1,7 @@
+vps-commands:
+	apt-get install docker
+	apt-get install docker-compose
+
 dev:
 	docker-compose up -d
 	

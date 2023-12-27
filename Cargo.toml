@@ -14,14 +14,14 @@ chrono = { version = "0.4.26", features = ["serde"] }
 dotenv = "0.15.0"
 env_logger = "0.10.0"
 futures-util = "0.3.28"
-jsonwebtoken = "8.3.0"
+jsonwebtoken = "9.2.0"
 openssl-probe = "0.1.5"
 serde = { version = "1.0.183", features = ["derive"] }
 serde_json = "1.0.104"
 sqlx = { version = "0.7.1", features = ["tls-native-tls", "runtime-async-std", "postgres", "chrono", "uuid"] }
-utoipa = { version = "3.4.4", features = ["actix_extras", "chrono"] }
-utoipa-rapidoc = { version = "0.1.0", features = ["actix-web"] }
-utoipa-redoc = { version = "0.1.0", features = ["actix-web"] }
-utoipa-swagger-ui = { version = "3.1.5", features = ["actix-web"] }
+utoipa = { version = "4.1.0", features = ["actix_extras", "chrono"] }
+utoipa-rapidoc = { version = "2.0.0", features = ["actix-web"] }
+utoipa-redoc = { version = "2.0.0", features = ["actix-web"] }
+utoipa-swagger-ui = { version = "5.0.0", features = ["actix-web"] }
 uuid = { version = "1.4.1", features = ["serde", "v4"] }
 validator = { version = "0.16.1", features = ["derive"] }
