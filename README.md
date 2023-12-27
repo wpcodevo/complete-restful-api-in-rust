@@ -119,4 +119,32 @@ In this article, you will learn how to write unit tests for your Rust API projec
   
 Read the entire article here: [https://codevoweb.com/how-to-write-unit-tests-for-your-rust-api/](https://codevoweb.com/how-to-write-unit-tests-for-your-rust-api/)
 
+## 5. Dockerizing a Rust API Project, SQL Database, and pgAdmin
+
+In this article, we'll be dockerizing our Rust API project within our development environment.
+
+![Dockerizing a Rust API Project, SQL Database and pgAdmin](https://codevoweb.com/wp-content/uploads/2023/09/Dockerizing-a-Rust-API-Project-SQL-Database-and-pgAdmin.webp)
+
+### Topics Covered
+
+- Requirements
+- Running the Rust API Project in Docker
+- Running the Rust API Project on Your Machine
+- What is Docker Compose?
+- Setting Up Rust API with Docker Support
+- Configuring PostgreSQL and pgAdmin Containers with Docker Compose
+   - Setting PostgreSQL and pgAdmin Ports for Development
+- Generating the SQLx Prepared Queries
+- Configuring Rust API Container with Docker Compose
+   - Setting Up Dockerfile for the Rust Project
+   - Setting Up Docker Compose for the Rust API
+   - Setting Container Port and Database URL for Development
+- Running the Rust API with Docker Compose
+- Testing the Rust API using Swagger Docs
+- Accessing the pgAdmin Container from your Browser
+- Conclusion
+
+  
+Read the entire article here: [https://codevoweb.com/dockerizing-a-rust-api-project/](https://codevoweb.com/dockerizing-a-rust-api-project/)
+
 
