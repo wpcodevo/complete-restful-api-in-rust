@@ -147,4 +147,38 @@ In this article, we'll be dockerizing our Rust API project within our developmen
   
 Read the entire article here: [https://codevoweb.com/dockerizing-a-rust-api-project/](https://codevoweb.com/dockerizing-a-rust-api-project/)
 
+## 6. Deploy Rust App on VPS with GitHub Actions and Docker
+
+In this tutorial, you will learn how to dockerize a Rust application, PostgreSQL, and pgAdmin servers using Docker Compose and deploy them onto a Virtual Private Server (VPS) through GitHub Actions.
+
+![Deploy Rust App on VPS with GitHub Actions and Docker](https://codevoweb.com/wp-content/uploads/2023/12/Deploy-Rust-App-on-VPS-with-GitHub-Actions-and-Docker.webp)
+
+### Topics Covered
+
+- Introduction
+  - What is Continuous Integration (CI)
+  - What is Continuous Deployment (CD)
+  - What are GitHub Actions
+- Prerequisites
+- Setting Up the Rust Application
+- Dockerizing the Rust App
+   - Running the Unit Tests with a PostgreSQL Server Locally
+   - Creating a Dockerfile for the Rust application
+   - Creating a docker-compose.yml File for Multi-Container Setups
+   - Building and Testing the Docker Image Locally
+- Configuring GitHub Actions
+   - Building Rust App and Running Unit Tests with GitHub Actions
+   - Automating Deployment with GitHub Actions
+   - Complete GitHub Actions
+- Deployment to VPS
+   - Setting up a Virtual Private Server (VPS) for Deployment
+   - Install Docker and Docker Compose on the VPS
+   - Creating a docker-compose.prod.yml File for Production Deployment
+   - Configuring Caddy as the Reverse Proxy for the Rust App
+   - Testing the Automated Deployment Process
+- Conclusion
+
+  
+Read the entire article here: [https://codevoweb.com/deploy-rust-app-on-vps-with-github-actions-and-docker/](https://codevoweb.com/deploy-rust-app-on-vps-with-github-actions-and-docker/)
+
 
